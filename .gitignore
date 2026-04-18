@@ -208,5 +208,7 @@ __marimo__/
 
 ## IDE
 .idea/
+
 ## data
 /Homework/data**
+/Project/data/**
