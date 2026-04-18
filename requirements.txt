@@ -1,0 +1,6 @@
+biopython==1.87
+matplotlib==3.10.9
+multiqc==1.35
+networkx==3.6.1
+numpy==2.4.1
+pycurl==7.46.0
