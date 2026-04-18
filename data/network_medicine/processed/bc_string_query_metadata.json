@@ -1,0 +1,31 @@
+{
+  "accessed_at_utc": "2026-08-15T16:53:49.705575+00:00",
+  "api_url": "https://version-12-0.string-db.org",
+  "string_version": "12.0",
+  "api_method_mapping": "get_string_ids",
+  "api_method_network": "network",
+  "species": 9606,
+  "network_type": "physical",
+  "score_threshold": 0.7,
+  "api_required_score": 0,
+  "local_required_score": 700,
+  "evidence_channels": [
+    "experiments",
+    "databases"
+  ],
+  "evidence_combination": "STRING probabilistic combination of escore and dscore with prior p=0.041 removed from each channel and restored once",
+  "excluded_channels": [
+    "textmining",
+    "coexpression",
+    "neighborhood",
+    "fusion",
+    "cooccurrence"
+  ],
+  "additional_interactors": 0,
+  "input_gene_count": 72,
+  "mapped_gene_count": 72,
+  "unmapped_gene_count": 0,
+  "returned_edge_count": 14,
+  "caller_identity": "BSBProject_VitoBarra",
+  "interpretation": "Physical STRING associations among the submitted genes only, filtered locally to experiments/database evidence score >= threshold. No additional interactors were requested."
+}

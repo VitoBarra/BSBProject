@@ -1,0 +1,16 @@
+{
+  "network_nodes": 836,
+  "network_edges": 2369,
+  "connected_components": 151,
+  "largest_component_size": 638,
+  "isolated_nodes": 117,
+  "background_nodes": 530,
+  "software_versions": {
+    "python": "3.12.3",
+    "networkx": "3.6.1",
+    "matplotlib": "3.10.9"
+  },
+  "distance_policy": "Unweighted shortest paths; all-pairs average distance as taught in class; self-pairs included for within-module distances; unreachable pairs excluded and reported.",
+  "separation_formula": "s_AB = d_AB - (d_AA + d_BB) / 2",
+  "interpretation": "Negative values indicate topological overlap; positive values indicate separation."
+}
