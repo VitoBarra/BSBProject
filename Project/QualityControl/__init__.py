@@ -13,7 +13,10 @@ DATA_ROOT = PROJECT_ROOT / "data"
 class QualityControlConfig:
     dataset_key: str = GSE103001_PROFILE.key
     fastq_dir: Path | None = None
+    trimmed_fastq_dir: Path | None = None
+    fastp_report_out: Path | None = None
     fastqc_report_out: Path | None = None
+    fastqc_trimmed_report_out: Path | None = None
     multiqc_report_out: Path | None = None
     profile: DatasetProfile = field(init=False)
 
@@ -30,8 +33,17 @@ class QualityControlConfig:
     def resolved_fastq_dir(self) -> Path:
         return self.fastq_dir or (self.dataset_root() / "raw_fastq")
 
+    def resolved_trimmed_fastq_dir(self) -> Path:
+        return self.trimmed_fastq_dir or (self.dataset_root() / "trimmed_fastq")
+
+    def resolved_fastp_report_out(self) -> Path:
+        return self.fastp_report_out or (self.dataset_root() / "qc" / "fastp")
+
     def resolved_fastqc_report_out(self) -> Path:
         return self.fastqc_report_out or (self.dataset_root() / "qc" / "fastqc")
+
+    def resolved_fastqc_trimmed_report_out(self) -> Path:
+        return self.fastqc_trimmed_report_out or (self.dataset_root() / "qc" / "fastqc_trimmed")
 
     def resolved_multiqc_report_out(self) -> Path:
         return self.multiqc_report_out or (self.dataset_root() / "qc" / "multiqc")
@@ -40,5 +52,6 @@ class QualityControlConfig:
         return self.dataset_root() / "qc"
 
 
+from .fastp_runner import run_fastp
 from .fastqc_runner import run_fastqc
 from .multiqc_runner import run_multiqc
