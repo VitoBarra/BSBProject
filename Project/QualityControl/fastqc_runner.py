@@ -60,12 +60,18 @@ def collect_fastqc_inputs(fastq_dir: Path) -> list[Path]:
 def run_fastqc(
     config: QualityControlConfig,
     executable: str = "fastqc",
-    threads: int = 2) -> Path:
+    threads: int = 2,
+    use_trimmed_reads: bool = False,
+) -> Path:
     if threads <= 0:
         raise ValueError("threads must be positive")
 
-    fastq_dir = config.resolved_fastq_dir()
-    out_dir = config.resolved_fastqc_report_out()
+    if use_trimmed_reads:
+        fastq_dir = config.resolved_trimmed_fastq_dir()
+        out_dir = config.resolved_fastqc_trimmed_report_out()
+    else:
+        fastq_dir = config.resolved_fastq_dir()
+        out_dir = config.resolved_fastqc_report_out()
     inputs = collect_fastqc_inputs(fastq_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
