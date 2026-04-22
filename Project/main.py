@@ -15,13 +15,20 @@ def parse_args() -> argparse.Namespace:
         choices=sorted(PROFILES),
         help="Dataset key to process.",
     )
+    parser.add_argument("--skip-build", action="store_true", help="Skip metadata table generation and use the existing TSV.")
+    parser.add_argument("--skip-download", action="store_true", help="Skip FASTQ download after metadata table generation.")
+    parser.add_argument("--workers", type=int, default=6, help="Number of FASTQ downloads to run in parallel.")
     parser.add_argument("--num-pairs", type=int, default=4, help="Number of matched patient pairs to include.")
     parser.add_argument("--soft-path", type=Path, default=None, help="Optional custom path for the GEO SOFT file.")
     parser.add_argument("--metadata-path", type=Path, default=None, help="Optional custom output/input TSV path.")
+
+    parser.add_argument("--run-fastqc", default= True, action="store_true", help="Run FastQC on raw reads")
+    parser.add_argument("--fastqc-threads", type=int, default=6, help="Worker threads to pass to FastQC.")
     parser.add_argument("--fastq-dest", type=Path, default=None, help="Optional custom destination directory for FASTQ files.")
-    parser.add_argument("--workers", type=int, default=6, help="Number of FASTQ downloads to run in parallel.")
-    parser.add_argument("--skip-build", action="store_true", help="Skip metadata table generation and use the existing TSV.")
-    parser.add_argument("--skip-download", action="store_true", help="Skip FASTQ download after metadata table generation.")
+    parser.add_argument("--fastqc-report-out", type=Path, default=None, help="Optional FastQC output directory for raw reads.")
+
+    parser.add_argument("--run-multiqc", default=True, action="store_true", help="Run MultiQC on all QC results, including FastQC.")
+    parser.add_argument("--multiqc-report-out", type=Path, default=None, help="Optional MultiQC output directory.")
     return parser.parse_args()
 
 
@@ -41,6 +48,25 @@ def main() -> int:
 
     if not args.skip_download:
         download_fastq_from_tsv(config)
+
+    qc_config = QualityControlConfig(
+        dataset_key=args.dataset,
+        fastq_dir=args.fastq_dest,
+        trimmed_fastq_dir=args.trimmed_fastq_dest,
+        fastp_report_out=args.fastp_report_out,
+        fastqc_report_out=args.fastqc_report_out,
+        fastqc_trimmed_report_out=args.fastqc_trimmed_report_out,
+        multiqc_report_out=args.multiqc_report_out,
+    )
+
+    if args.run_fastqc and False:
+        run_fastqc(
+            qc_config,
+            threads=args.fastqc_threads,
+        )
+
+    if args.run_multiqc:
+        run_multiqc(qc_config)
 
     return 0
 
