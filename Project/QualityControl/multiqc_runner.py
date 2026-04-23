@@ -33,7 +33,7 @@ def run_multiqc(
         "bash",
         "-lc",
         f"command -v {executable} >/dev/null 2>&1 || {{ echo 'MultiQC not found in WSL PATH' >&2; exit 127; }}; "
-        f"PYTHONNOUSERSITE=1 {executable} --force --outdir '{_windows_to_wsl_path(out_dir)}' --filename '{report_name}.html' '{_windows_to_wsl_path(qc_input_dir)}'",
+        f"PYTHONNOUSERSITE=1 {executable} --force --dirs --dirs-depth 1 --outdir '{_windows_to_wsl_path(out_dir)}' --filename '{report_name}.html' '{_windows_to_wsl_path(qc_input_dir)}'",
     ]
 
     _log(f"QC input directory: {qc_input_dir}")
