@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--soft-path", type=Path, default=None, help="Optional custom path for the GEO SOFT file.")
     parser.add_argument("--metadata-path", type=Path, default=None, help="Optional custom output/input TSV path.")
 
-    parser.add_argument("--run-fastqc", default= True, action="store_true", help="Run FastQC on raw reads and, if trimming is enabled, also on trimmed reads.")
+    parser.add_argument("--run-fastqc", default= False, action="store_true", help="Run FastQC on raw reads and, if trimming is enabled, also on trimmed reads.")
     parser.add_argument("--fastqc-threads", type=int, default=6, help="Worker threads to pass to FastQC.")
     parser.add_argument("--fastq-dest", type=Path, default=None, help="Optional custom destination directory for FASTQ files.")
     parser.add_argument("--fastqc-report-out", type=Path, default=None, help="Optional FastQC output directory for raw reads.")
@@ -66,7 +66,7 @@ def main() -> int:
         multiqc_report_out=args.multiqc_report_out,
     )
 
-    if args.run_fastqc and False:
+    if args.run_fastqc:
         run_fastqc(
             qc_config,
             threads=args.fastqc_threads,
