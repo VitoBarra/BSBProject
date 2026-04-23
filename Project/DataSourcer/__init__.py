@@ -28,6 +28,9 @@ class DataSourceConfig:
     soft_path: Path | None = None
     metadata_path: Path | None = None
     fastq_dest: Path | None = None
+    reference_dir: Path | None = None
+    transcriptome_fasta_path: Path | None = None
+    transcriptome_url: str | None = None
     download_workers: int = 3
     profile: DatasetProfile = field(init=False)
 
@@ -52,6 +55,21 @@ class DataSourceConfig:
     def resolved_fastq_dest(self) -> Path:
         return self.fastq_dest or (self.dataset_root() / "raw_fastq")
 
+    def resolved_reference_dir(self) -> Path:
+        return self.reference_dir or (self.dataset_root() / "reference")
+
+    def resolved_transcriptome_fasta_path(self) -> Path:
+        return self.transcriptome_fasta_path or (self.resolved_reference_dir() / self.profile.transcriptome_filename)
+
+    def resolved_transcriptome_url(self) -> str:
+        url = self.transcriptome_url or self.profile.transcriptome_url
+        if url is None:
+            raise ValueError(
+                f"No default transcriptome URL is configured for dataset '{self.profile.key}'. "
+                "Pass --transcriptome-url explicitly."
+            )
+        return url
+
 
 def build_metadata_table(config: DataSourceConfig) -> Path:
     builder = METADATA_BUILDERS[config.profile.key]
@@ -61,6 +79,7 @@ def build_metadata_table(config: DataSourceConfig) -> Path:
 from .GSE103001_metadata_extractor import build_metadata_table as build_gse103001_metadata_table
 from .GSE210787_metadata_extractor import build_metadata_table as build_gse210787_metadata_table
 from .GSE31210_metadata_extractor import build_metadata_table as build_gse31210_metadata_table
+from .download_reference_transcriptome import download_reference_transcriptome
 
 METADATA_BUILDERS: dict[str, MetadataBuilder] = {
     GSE103001_PROFILE.key: build_gse103001_metadata_table,
