@@ -16,14 +16,36 @@ def parse_args() -> argparse.Namespace:
         choices=sorted(PROFILES),
         help="Dataset key to process.",
     )
-    parser.add_argument("--skip-build", action="store_true", help="Skip metadata table generation and use the existing TSV.")
-    parser.add_argument("--skip-download", action="store_true", help="Skip FASTQ download after metadata table generation.")
+    parser.add_argument(
+        "--build-metadata-table",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Build the dataset metadata TSV before downstream steps.",
+    )
+    parser.add_argument(
+        "--download-fastq",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Download FASTQ files listed in the metadata TSV.",
+    )
     parser.add_argument("--workers", type=int, default=6, help="Number of FASTQ downloads to run in parallel.")
     parser.add_argument("--num-pairs", type=int, default=4, help="Number of matched patient pairs to include.")
     parser.add_argument("--soft-path", type=Path, default=None, help="Optional custom path for the GEO SOFT file.")
     parser.add_argument("--metadata-path", type=Path, default=None, help="Optional custom output/input TSV path.")
 
-    parser.add_argument("--run-fastqc", default= False, action="store_true", help="Run FastQC on raw reads and, if trimming is enabled, also on trimmed reads.")
+    parser.add_argument(
+        "--run-raw-fastqc",
+        default=False,
+        action="store_true",
+        help="Run FastQC on raw reads.",
+    )
+    parser.add_argument(
+        "--run-trimmed-fastqc",
+        default=False,
+        action="store_true",
+        help="Run FastQC on trimmed reads.",
+    )
+
     parser.add_argument("--fastqc-threads", type=int, default=6, help="Worker threads to pass to FastQC.")
     parser.add_argument("--fastq-dest", type=Path, default=None, help="Optional custom destination directory for FASTQ files.")
     parser.add_argument("--fastqc-report-out", type=Path, default=None, help="Optional FastQC output directory for raw reads.")
@@ -50,10 +72,10 @@ def main() -> int:
         download_workers=args.workers,
     )
 
-    if not args.skip_build:
+    if args.build_metadata_table:
         build_metadata_table(config)
 
-    if not args.skip_download:
+    if args.download_fastq:
         download_fastq_from_tsv(config)
 
     qc_config = QualityControlConfig(
@@ -66,7 +88,7 @@ def main() -> int:
         multiqc_report_out=args.multiqc_report_out,
     )
 
-    if args.run_fastqc:
+    if args.run_raw_fastqc:
         run_fastqc(
             qc_config,
             threads=args.fastqc_threads,
@@ -79,7 +101,7 @@ def main() -> int:
             threads=args.fastp_threads,
         )
 
-    if args.run_fastqc:
+    if args.run_trimmed_fastqc:
         run_fastqc(
             qc_config,
             threads=args.fastqc_threads,
