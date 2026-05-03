@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import re
-import shutil
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from ExternalTools import ExternalToolRunner
 from Log.log_util import log
 
 from . import QuantificationConfig
-from QualityControl.fastqc_runner import _windows_to_wsl_path
 
 LOG_PREFIX = "salmon"
 FASTQ_SUFFIX = ".fastq.gz"
@@ -26,10 +24,6 @@ class SalmonJob:
 
 def _log(message: str) -> None:
     log(message, LOG_PREFIX)
-
-
-def _shell_quote(value: str) -> str:
-    return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
 def collect_salmon_inputs(trimmed_fastq_dir: Path, quant_dir: Path) -> list[SalmonJob]:
@@ -75,39 +69,46 @@ def collect_salmon_inputs(trimmed_fastq_dir: Path, quant_dir: Path) -> list[Salm
     return jobs
 
 
-def _build_command(job: SalmonJob, executable: str, index_dir: Path, libtype: str, threads: int) -> str:
-    command_parts = [
-        executable,
+def _build_args(
+    job: SalmonJob,
+    runner: ExternalToolRunner,
+    index_dir: Path,
+    libtype: str,
+    threads: int,
+) -> list[str]:
+    return [
         "quant",
         "--index",
-        _shell_quote(_windows_to_wsl_path(index_dir)),
+        runner.path_arg(index_dir),
         "--libType",
-        _shell_quote(libtype),
+        libtype,
         "--threads",
         str(threads),
         "--validateMappings",
         "--mates1",
-        _shell_quote(_windows_to_wsl_path(job.read_1)),
+        runner.path_arg(job.read_1),
         "--mates2",
-        _shell_quote(_windows_to_wsl_path(job.read_2)),
+        runner.path_arg(job.read_2),
         "--output",
-        _shell_quote(_windows_to_wsl_path(job.output_dir)),
+        runner.path_arg(job.output_dir),
     ]
-    return " ".join(command_parts)
 
 
-def _build_index_command(executable: str, transcriptome_fasta: Path, index_dir: Path, threads: int) -> str:
-    command_parts = [
-        executable,
+def _build_index_args(
+    runner: ExternalToolRunner,
+    transcriptome_fasta: Path,
+    index_dir: Path,
+    threads: int,
+) -> list[str]:
+    return [
         "index",
         "--transcripts",
-        _shell_quote(_windows_to_wsl_path(transcriptome_fasta)),
+        runner.path_arg(transcriptome_fasta),
         "--index",
-        _shell_quote(_windows_to_wsl_path(index_dir)),
+        runner.path_arg(index_dir),
         "--threads",
         str(threads),
     ]
-    return " ".join(command_parts)
 
 
 def _ensure_salmon_index(
@@ -136,21 +137,16 @@ def _ensure_salmon_index(
     _log(f"Building Salmon index from transcriptome FASTA: {transcriptome_fasta}")
     _log(f"Salmon index output directory: {index_dir}")
 
-    wsl_executable = shutil.which("wsl") or r"C:\Windows\System32\wsl.exe"
-    command = [
-        wsl_executable,
-        "bash",
-        "-lc",
-        f"command -v {executable} >/dev/null 2>&1 || {{ echo 'salmon not found in WSL PATH' >&2; exit 127; }}; "
-        f"{_build_index_command(executable=executable, transcriptome_fasta=transcriptome_fasta, index_dir=index_dir, threads=threads)}",
-    ]
-    _log(f"Running command: {' '.join(command)}")
-    try:
-        subprocess.run(command, check=True)
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(
-            "Unable to start the WSL Salmon command. Verify that WSL is installed and reachable from Python."
-        ) from exc
+    runner = ExternalToolRunner(executable=executable, display_name="Salmon", log=_log)
+    runner.run(
+        _build_index_args(
+            runner=runner,
+            transcriptome_fasta=transcriptome_fasta,
+            index_dir=index_dir,
+            threads=threads,
+        ),
+        missing_message="salmon not found in PATH",
+    )
 
     return index_dir
 
@@ -189,24 +185,14 @@ def run_salmon(
     _log(f"Salmon output directory: {quant_dir}")
     _log(f"Input datasets selected: {len(jobs)}")
 
-    wsl_executable = shutil.which("wsl") or r"C:\Windows\System32\wsl.exe"
+    runner = ExternalToolRunner(executable=executable, display_name="Salmon", log=_log)
     for index, job in enumerate(jobs, start=1):
         job.output_dir.mkdir(parents=True, exist_ok=True)
-        command = [
-            wsl_executable,
-            "bash",
-            "-lc",
-            f"command -v {executable} >/dev/null 2>&1 || {{ echo 'salmon not found in WSL PATH' >&2; exit 127; }}; "
-            f"{_build_command(job, executable=executable, index_dir=index_dir, libtype=libtype, threads=threads)}",
-        ]
         _log(f"[{index}/{len(jobs)}] Quantifying {job.name}")
-        _log(f"Running command: {' '.join(command)}")
-        try:
-            subprocess.run(command, check=True)
-        except FileNotFoundError as exc:
-            raise FileNotFoundError(
-                "Unable to start the WSL Salmon command. Verify that WSL is installed and reachable from Python."
-            ) from exc
+        runner.run(
+            _build_args(job, runner=runner, index_dir=index_dir, libtype=libtype, threads=threads),
+            missing_message="salmon not found in PATH",
+        )
 
     _log("Done")
     return quant_dir

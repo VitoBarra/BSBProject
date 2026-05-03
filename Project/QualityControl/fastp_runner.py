@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import re
-import shutil
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from ExternalTools import ExternalToolRunner
 from Log.log_util import log
 
 from . import QualityControlConfig
-from .fastqc_runner import _windows_to_wsl_path
 
 LOG_PREFIX = "fastp"
 FASTQ_SUFFIX = ".fastq.gz"
@@ -29,10 +27,6 @@ class FastpJob:
 
 def _log(message: str) -> None:
     log(message, LOG_PREFIX)
-
-
-def _shell_quote(value: str) -> str:
-    return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
 def _job_name(path: Path) -> str:
@@ -112,33 +106,32 @@ def _build_fastp_jobs(fastq_dir: Path, trimmed_dir: Path, report_dir: Path) -> l
     return jobs
 
 
-def _build_command(job: FastpJob, executable: str, threads: int) -> str:
-    command_parts = [
-        executable,
+def _build_args(job: FastpJob, runner: ExternalToolRunner, threads: int) -> list[str]:
+    args = [
         "--thread",
         str(threads),
         "--html",
-        _shell_quote(_windows_to_wsl_path(job.html_report)),
+        runner.path_arg(job.html_report),
         "--json",
-        _shell_quote(_windows_to_wsl_path(job.json_report)),
+        runner.path_arg(job.json_report),
     ]
 
-    command_parts.extend([
+    args.extend([
         "--in1",
-        _shell_quote(_windows_to_wsl_path(job.input_fastq_1)),
+        runner.path_arg(job.input_fastq_1),
         "--out1",
-        _shell_quote(_windows_to_wsl_path(job.output_fastq_1)),
+        runner.path_arg(job.output_fastq_1),
     ])
 
     if job.input_fastq_2 is not None and job.output_fastq_2 is not None:
-        command_parts.extend([
+        args.extend([
             "--in2",
-            _shell_quote(_windows_to_wsl_path(job.input_fastq_2)),
+            runner.path_arg(job.input_fastq_2),
             "--out2",
-            _shell_quote(_windows_to_wsl_path(job.output_fastq_2)),
+            runner.path_arg(job.output_fastq_2),
         ])
 
-    return " ".join(command_parts)
+    return args
 
 
 def run_fastp(
@@ -164,23 +157,13 @@ def run_fastp(
     _log(f"fastp report directory: {report_dir}")
     _log(f"Input datasets selected: {len(jobs)}")
 
-    wsl_executable = shutil.which("wsl") or r"C:\Windows\System32\wsl.exe"
+    runner = ExternalToolRunner(executable=executable, display_name="fastp", log=_log)
     for index, job in enumerate(jobs, start=1):
-        command = [
-            wsl_executable,
-            "bash",
-            "-lc",
-            f"command -v {executable} >/dev/null 2>&1 || {{ echo 'fastp not found in WSL PATH' >&2; exit 127; }}; "
-            f"{_build_command(job, executable=executable, threads=threads)}",
-        ]
         _log(f"[{index}/{len(jobs)}] Trimming {job.name}")
-        _log(f"Running command: {' '.join(command)}")
-        try:
-            subprocess.run(command, check=True)
-        except FileNotFoundError as exc:
-            raise FileNotFoundError(
-                "Unable to start the WSL fastp command. Verify that WSL is installed and reachable from Python."
-            ) from exc
+        runner.run(
+            _build_args(job, runner=runner, threads=threads),
+            missing_message="fastp not found in PATH",
+        )
 
     _log("Done")
     return trimmed_dir

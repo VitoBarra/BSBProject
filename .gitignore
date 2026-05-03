@@ -212,3 +212,6 @@ __marimo__/
 ## data
 /Homework/data**
 /Project/data/**
+
+##Tools
+Project/.tools/

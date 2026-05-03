@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import shutil
-import subprocess
 from pathlib import Path
 
+from ExternalTools import ExternalToolRunner
 from Log.log_util import log
 
 from . import QualityControlConfig
-from .fastqc_runner import _windows_to_wsl_path
 
 LOG_PREFIX = "multiqc"
 
@@ -27,23 +25,23 @@ def run_multiqc(
         raise FileNotFoundError(f"Missing QC directory: {qc_input_dir}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    wsl_executable = shutil.which("wsl") or r"C:\Windows\System32\wsl.exe"
-    command = [
-        wsl_executable,
-        "bash",
-        "-lc",
-        f"command -v {executable} >/dev/null 2>&1 || {{ echo 'MultiQC not found in WSL PATH' >&2; exit 127; }}; "
-        f"PYTHONNOUSERSITE=1 {executable} --force --dirs --dirs-depth 1 --outdir '{_windows_to_wsl_path(out_dir)}' --filename '{report_name}.html' '{_windows_to_wsl_path(qc_input_dir)}'",
-    ]
-
     _log(f"QC input directory: {qc_input_dir}")
     _log(f"MultiQC output directory: {out_dir}")
-    _log(f"Running command: {' '.join(command)}")
-    try:
-        subprocess.run(command, check=True)
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(
-            "Unable to start the WSL MultiQC command. Verify that WSL is installed and reachable from Python."
-        ) from exc
+    runner = ExternalToolRunner(executable=executable, display_name="MultiQC", log=_log)
+    runner.run(
+        [
+            "--force",
+            "--dirs",
+            "--dirs-depth",
+            "1",
+            "--outdir",
+            runner.path_arg(out_dir),
+            "--filename",
+            f"{report_name}.html",
+            runner.path_arg(qc_input_dir),
+        ],
+        env={"PYTHONNOUSERSITE": "1"},
+        missing_message="MultiQC not found in PATH",
+    )
     _log("Done")
     return out_dir / f"{report_name}.html"

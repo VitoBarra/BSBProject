@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import re
-import shutil
-import subprocess
 from pathlib import Path
 
+from ExternalTools import ExternalToolRunner
 from Log.log_util import log
 
 from . import QualityControlConfig
@@ -16,12 +15,6 @@ PAIRED_FASTQ_RE = re.compile(r"^(?P<stem>.+)_(?P<mate>[12])\.fastq\.gz$")
 
 def _log(message: str) -> None:
     log(message, LOG_PREFIX)
-
-
-def _windows_to_wsl_path(path: Path) -> str:
-    drive = path.drive.rstrip(":").lower()
-    parts = [part.replace("'", "'\"'\"'") for part in path.parts[1:]]
-    return f"/mnt/{drive}/{'/'.join(parts)}"
 
 
 def collect_fastqc_inputs(fastq_dir: Path) -> list[Path]:
@@ -79,22 +72,16 @@ def run_fastqc(
     _log(f"FastQC output directory: {out_dir}")
     _log(f"Input FASTQ files selected: {len(inputs)}")
 
-    wsl_executable = shutil.which("wsl") or r"C:\Windows\System32\wsl.exe"
-    quoted_inputs = " ".join(f"'{_windows_to_wsl_path(path)}'" for path in inputs)
-    command = [
-        wsl_executable,
-        "bash",
-        "-lc",
-        f"command -v {executable} >/dev/null 2>&1 || {{ echo 'FastQC not found in WSL PATH' >&2; exit 127; }}; "
-        f"{executable} --threads {threads} --outdir '{_windows_to_wsl_path(out_dir)}' {quoted_inputs}",
-    ]
-
-    _log(f"Running command: {' '.join(command)}")
-    try:
-        subprocess.run(command, check=True)
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(
-            "Unable to start the WSL FastQC command. Verify that WSL is installed and reachable from Python."
-        ) from exc
+    runner = ExternalToolRunner(executable=executable, display_name="FastQC", log=_log)
+    runner.run(
+        [
+            "--threads",
+            str(threads),
+            "--outdir",
+            runner.path_arg(out_dir),
+            *(runner.path_arg(path) for path in inputs),
+        ],
+        missing_message="FastQC not found in PATH",
+    )
     _log("Done")
     return out_dir
