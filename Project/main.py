@@ -4,6 +4,13 @@ import argparse
 from pathlib import Path
 
 from DataSourcer import DataSourceConfig, PROFILES, build_metadata_table, download_reference_transcriptome
+from DifferentialExpression import (
+    DifferentialExpressionConfig,
+    SalmonGeneAggregationConfig,
+    build_salmon_gene_matrices,
+    run_deseq2,
+)
+from Enrichment import EnrichmentConfig, run_go_enrichment
 from Quantification import QuantificationConfig, run_salmon
 from QualityControl import QualityControlConfig, run_fastp, run_fastqc, run_multiqc
 from DataSourcer.download_fastq import download_fastq_from_tsv
@@ -93,6 +100,31 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--salmon-quant-dir", type=Path, default=None, help="Optional output directory for Salmon quantification results.")
     parser.add_argument("--salmon-libtype", default="A", help="Salmon library type, for example A or ISR.")
 
+    parser.add_argument("--run-dea", default=False, action="store_true", help="Run paired DESeq2 differential expression analysis.")
+    parser.add_argument(
+        "--prepare-dea-inputs",
+        default=False,
+        action="store_true",
+        help="Aggregate Salmon transcript estimates into gene-level count/TPM matrices and build the DESeq2 sample table.",
+    )
+    parser.add_argument("--gene-counts-path", type=Path, default=None, help="Optional gene-level count matrix TSV for DESeq2.")
+    parser.add_argument("--sample-table-path", type=Path, default=None, help="Optional sample table TSV for DESeq2.")
+    parser.add_argument("--de-results-dir", type=Path, default=None, help="Optional output directory for DESeq2 tables and plots.")
+    parser.add_argument("--de-input-dir", type=Path, default=None, help="Optional output directory for generated DEA input files.")
+    parser.add_argument(
+        "--tx2gene-path",
+        type=Path,
+        default=None,
+        help="Optional transcript-to-gene TSV. If absent, it is generated from the transcriptome FASTA.",
+    )
+    parser.add_argument("--de-min-count", type=int, default=10, help="Minimum count used for DESeq2 prefiltering.")
+    parser.add_argument("--de-min-samples", type=int, default=2, help="Minimum number of samples passing --de-min-count.")
+
+    parser.add_argument("--run-enrichment", default=False, action="store_true", help="Run GO over-representation analysis from DESeq2 results.")
+    parser.add_argument("--de-results-path", type=Path, default=None, help="Optional DESeq2 all-genes CSV for enrichment.")
+    parser.add_argument("--enrichment-dir", type=Path, default=None, help="Optional output directory for enrichment results.")
+    parser.add_argument("--enrichment-padj-cutoff", type=float, default=0.05, help="Adjusted p-value cutoff for enrichment input genes.")
+    parser.add_argument("--enrichment-lfc-cutoff", type=float, default=0.0, help="Absolute log2 fold-change cutoff for enrichment input genes.")
     parser.add_argument("--run-multiqc", default=False, action="store_true", help="Run MultiQC on all QC results, including FastQC and fastp reports.")
     parser.add_argument("--multiqc-report-out", type=Path, default=None, help="Optional MultiQC output directory.")
     return parser.parse_args()
@@ -139,6 +171,32 @@ def main() -> int:
         salmon_transcriptome_fasta=args.salmon_transcriptome_fasta or args.transcriptome_fasta_path,
     )
 
+    de_config = DifferentialExpressionConfig(
+        dataset_key=args.dataset,
+        gene_counts_path=args.gene_counts_path,
+        sample_table_path=args.sample_table_path,
+        de_results_dir=args.de_results_dir,
+        min_count=args.de_min_count,
+        min_samples=args.de_min_samples,
+    )
+
+    aggregation_config = SalmonGeneAggregationConfig(
+        dataset_key=args.dataset,
+        metadata_path=args.metadata_path,
+        salmon_quant_dir=args.salmon_quant_dir,
+        transcriptome_fasta_path=args.salmon_transcriptome_fasta or args.transcriptome_fasta_path,
+        output_dir=args.de_input_dir,
+        tx2gene_path=args.tx2gene_path,
+    )
+
+    enrichment_config = EnrichmentConfig(
+        dataset_key=args.dataset,
+        de_results_path=args.de_results_path,
+        enrichment_dir=args.enrichment_dir,
+        padj_cutoff=args.enrichment_padj_cutoff,
+        lfc_cutoff=args.enrichment_lfc_cutoff,
+    )
+
     if args.run_raw_fastqc:
         run_fastqc(
             qc_config,
@@ -169,6 +227,15 @@ def main() -> int:
             libtype=args.salmon_libtype,
             build_index_if_missing=args.build_salmon_index,
         )
+
+    if args.prepare_dea_inputs:
+        build_salmon_gene_matrices(aggregation_config)
+
+    if args.run_dea:
+        run_deseq2(de_config)
+
+    if args.run_enrichment:
+        run_go_enrichment(enrichment_config)
 
     return 0
 
