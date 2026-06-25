@@ -107,7 +107,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Aggregate Salmon transcript estimates into gene-level count/TPM matrices and build the DESeq2 sample table.",
     )
-    parser.add_argument("--gene-counts-path", type=Path, default=None, help="Optional gene-level count matrix TSV for DESeq2.")
     parser.add_argument("--sample-table-path", type=Path, default=None, help="Optional sample table TSV for DESeq2.")
     parser.add_argument("--de-results-dir", type=Path, default=None, help="Optional output directory for DESeq2 tables and plots.")
     parser.add_argument("--de-input-dir", type=Path, default=None, help="Optional output directory for generated DEA input files.")
@@ -115,7 +114,7 @@ def parse_args() -> argparse.Namespace:
         "--tx2gene-path",
         type=Path,
         default=None,
-        help="Optional transcript-to-gene TSV. If absent, it is generated from the transcriptome FASTA.",
+        help="Optional transcript-to-gene TSV used for aggregation and tximport. If absent, it is generated from the transcriptome FASTA.",
     )
     parser.add_argument("--de-min-count", type=int, default=10, help="Minimum count used for DESeq2 prefiltering.")
     parser.add_argument("--de-min-samples", type=int, default=2, help="Minimum number of samples passing --de-min-count.")
@@ -179,8 +178,8 @@ def main() -> int:
 
     de_config = DifferentialExpressionConfig(
         dataset_key=args.dataset,
-        gene_counts_path=args.gene_counts_path,
         sample_table_path=args.sample_table_path,
+        tx2gene_path=args.tx2gene_path,
         de_results_dir=args.de_results_dir,
         min_count=args.de_min_count,
         min_samples=args.de_min_samples,

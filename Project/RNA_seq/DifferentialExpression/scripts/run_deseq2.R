@@ -21,28 +21,30 @@ parse_args <- function(args) {
   values
 }
 
-if (!requireNamespace("DESeq2", quietly = TRUE)) {
-  stop(
-    "Missing required R package 'DESeq2'. Install it with BiocManager before running this step.",
-    call. = FALSE
-  )
+for (package in c("DESeq2", "tximport")) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    stop(
+      "Missing required R package '", package, "'. Install it with BiocManager before running this step.",
+      call. = FALSE
+    )
+  }
 }
 
 args <- parse_args(commandArgs(trailingOnly = TRUE))
-counts_path <- args[["counts"]]
 samples_path <- args[["samples"]]
+tx2gene_path <- args[["tx2gene"]]
 outdir <- args[["outdir"]]
 min_count <- as.integer(args[["min-count"]] %||% "10")
 min_samples <- as.integer(args[["min-samples"]] %||% "2")
 
-if (is.null(counts_path) || is.null(samples_path) || is.null(outdir)) {
-  stop("Usage: run_deseq2.R --counts counts.tsv --samples sample_table.tsv --outdir results_dir")
+if (is.null(samples_path) || is.null(tx2gene_path) || is.null(outdir)) {
+  stop("Usage: run_deseq2.R --samples sample_table.tsv --tx2gene tx2gene.tsv --outdir results_dir")
 }
 
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
-counts_raw <- read.delim(counts_path, check.names = FALSE, stringsAsFactors = FALSE)
 samples <- read.delim(samples_path, check.names = FALSE, stringsAsFactors = FALSE)
+tx2gene <- read.delim(tx2gene_path, check.names = FALSE, stringsAsFactors = FALSE)
 
 required_sample_cols <- c("sample_name", "patient", "condition")
 missing_sample_cols <- setdiff(required_sample_cols, colnames(samples))
@@ -50,38 +52,47 @@ if (length(missing_sample_cols) > 0) {
   stop("Sample table is missing columns: ", paste(missing_sample_cols, collapse = ", "))
 }
 
-required_count_cols <- c("gene_id", "gene_symbol")
-missing_count_cols <- setdiff(required_count_cols, colnames(counts_raw))
-if (length(missing_count_cols) > 0) {
-  stop("Count table is missing columns: ", paste(missing_count_cols, collapse = ", "))
+required_tx2gene_cols <- c("transcript_id", "gene_id", "gene_symbol")
+missing_tx2gene_cols <- setdiff(required_tx2gene_cols, colnames(tx2gene))
+if (length(missing_tx2gene_cols) > 0) {
+  stop("Transcript-to-gene table is missing columns: ", paste(missing_tx2gene_cols, collapse = ", "))
 }
 
 sample_names <- samples$sample_name
-missing_counts <- setdiff(sample_names, colnames(counts_raw))
-if (length(missing_counts) > 0) {
-  stop("Count matrix is missing sample columns: ", paste(missing_counts, collapse = ", "))
+quant_files <- setNames(samples$quant_sf, sample_names)
+missing_quant_files <- quant_files[!file.exists(quant_files)]
+if (length(missing_quant_files) > 0) {
+  stop("Missing Salmon quant.sf files: ", paste(missing_quant_files, collapse = ", "))
 }
 
-gene_annot <- counts_raw[, c("gene_id", "gene_symbol")]
-counts <- as.matrix(counts_raw[, sample_names, drop = FALSE])
-storage.mode(counts) <- "numeric"
-counts <- round(counts)
-rownames(counts) <- gene_annot$gene_id
+tx2gene_import <- unique(tx2gene[, c("transcript_id", "gene_id")])
+txi <- tximport::tximport(
+  files = quant_files,
+  type = "salmon",
+  tx2gene = tx2gene_import,
+  ignoreTxVersion = TRUE
+)
+
+gene_annot <- unique(tx2gene[, c("gene_id", "gene_symbol")])
+gene_annot <- gene_annot[!duplicated(gene_annot$gene_id), , drop = FALSE]
+rownames(gene_annot) <- gene_annot$gene_id
 
 rownames(samples) <- samples$sample_name
 samples <- samples[sample_names, , drop = FALSE]
 samples$patient <- factor(samples$patient)
 samples$condition <- relevel(factor(samples$condition), ref = "normal")
 
-keep <- rowSums(counts >= min_count) >= min_samples
-counts <- counts[keep, , drop = FALSE]
-gene_annot <- gene_annot[keep, , drop = FALSE]
-if (nrow(counts) == 0) {
+keep <- rowSums(txi$counts >= min_count) >= min_samples
+txi$counts <- txi$counts[keep, , drop = FALSE]
+txi$abundance <- txi$abundance[keep, , drop = FALSE]
+txi$length <- txi$length[keep, , drop = FALSE]
+gene_annot <- gene_annot[rownames(txi$counts), , drop = FALSE]
+if (nrow(txi$counts) == 0) {
   stop("No genes remain after count filtering.")
 }
 
-dds <- DESeq2::DESeqDataSetFromMatrix(
-  countData = counts,
+dds <- DESeq2::DESeqDataSetFromTximport(
+  txi = txi,
   colData = samples,
   design = ~ patient + condition
 )
@@ -98,10 +109,11 @@ write.csv(res_df, file.path(outdir, "deseq2_all_genes.csv"), row.names = FALSE)
 summary_path <- file.path(outdir, "deseq2_summary.txt")
 sink(summary_path)
 cat("DESeq2 paired analysis: tumor vs normal\n")
+cat("Import: tximport gene-level Salmon estimates with average transcript-length offset\n")
 cat("Design: ~ patient + condition\n\n")
 cat("Samples:\n")
 print(samples[, intersect(c("sample_name", "patient", "condition", "srr", "quant_sf"), colnames(samples)), drop = FALSE])
-cat("\nGenes retained after filtering:", nrow(counts), "\n")
+cat("\nGenes retained after filtering:", nrow(txi$counts), "\n")
 cat("Significant genes padj < 0.05:", sum(!is.na(res_df$padj) & res_df$padj < 0.05), "\n\n")
 print(summary(res))
 sink()

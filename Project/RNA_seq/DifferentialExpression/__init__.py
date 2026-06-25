@@ -12,8 +12,8 @@ DATA_ROOT = PROJECT_ROOT / "data"
 @dataclass(slots=True)
 class DifferentialExpressionConfig:
     dataset_key: str = GSE103001_PROFILE.key
-    gene_counts_path: Path | None = None
     sample_table_path: Path | None = None
+    tx2gene_path: Path | None = None
     de_results_dir: Path | None = None
     min_count: int = 10
     min_samples: int = 2
@@ -36,11 +36,11 @@ class DifferentialExpressionConfig:
     def de_root(self) -> Path:
         return self.dataset_root() / "de"
 
-    def resolved_gene_counts_path(self) -> Path:
-        return self.gene_counts_path or (self.de_root() / "salmon_gene_counts.tsv")
-
     def resolved_sample_table_path(self) -> Path:
         return self.sample_table_path or (self.de_root() / "sample_table.tsv")
+
+    def resolved_tx2gene_path(self) -> Path:
+        return self.tx2gene_path or (self.de_root() / "tx2gene.tsv")
 
     def resolved_de_results_dir(self) -> Path:
         return self.de_results_dir or (self.de_root() / "results")

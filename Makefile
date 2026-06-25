@@ -20,6 +20,12 @@ help:
 	@echo "Targets:"
 	@echo "  docker-build   Build the Docker image with Python, R, DESeq2, and enrichment packages"
 	@echo "  run ARGS=...   Run Project/main.py inside the Docker container"
+	@echo "  download-data  Build metadata and download the selected paired FASTQ files"
+	@echo "  download-reference  Download the Ensembl GRCh38 transcriptome"
+	@echo "  trim-clean     Run raw QC, fastp cleaning, post-cleaning QC, and MultiQC"
+	@echo "  prepare-reads  Download, quality-control, trim, and clean the reads"
+	@echo "  quantify       Build the Salmon index if needed and quantify all cleaned reads"
+	@echo "  prepare-quantification  Download the transcriptome and run Salmon"
 	@echo "  prepare-dea    Aggregate Salmon transcript estimates into gene-level DEA inputs"
 	@echo "  dea            Run paired DESeq2 and write analysis tables"
 	@echo "  dea-plots      Generate DEA plots from existing tables with Python"
@@ -35,6 +41,28 @@ docker-build:
 
 run:
 	$(DOCKER_RUN) $(PYTHON) main.py $(ARGS)
+
+download-data:
+	$(MAKE) run ARGS="--build-metadata-table --download-fastq"
+
+download-reference:
+	$(MAKE) run ARGS="--download-reference-transcriptome"
+
+trim-clean:
+	$(MAKE) run ARGS="--run-raw-fastqc --run-fastp --run-trimmed-fastqc"
+	$(MAKE) multiqc-raw
+	$(MAKE) multiqc-clean
+
+prepare-reads:
+	$(MAKE) download-data
+	$(MAKE) trim-clean
+
+quantify:
+	$(MAKE) run ARGS="--run-salmon --build-salmon-index"
+
+prepare-quantification:
+	$(MAKE) download-reference
+	$(MAKE) quantify
 
 prepare-dea:
 	$(MAKE) run ARGS="--prepare-dea-inputs"
@@ -58,6 +86,8 @@ enrichment-plots:
 	$(MAKE) run ARGS="--plot-enrichment-results"
 
 analysis:
+	$(MAKE) prepare-reads
+	$(MAKE) prepare-quantification
 	$(MAKE) run ARGS="--prepare-dea-inputs --run-dea --plot-dea-results --run-enrichment --plot-enrichment-results"
 
 shell:
