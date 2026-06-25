@@ -1,0 +1,8 @@
+GO over-representation analysis
+Input DE table: /project/data/GSE103001/de/results/deseq2_all_genes.csv
+padj cutoff: 0.05
+absolute log2FC cutoff: 0.0
+Tested genes: 17683
+Significant genes: 2963
+GO terms tested: 7803
+GO terms significant at padj < 0.05: 907

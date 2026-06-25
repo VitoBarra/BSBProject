@@ -1,0 +1,645 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d7" for="edge" attr.name="distance" attr.type="double" />
+  <key id="d6" for="edge" attr.name="score" attr.type="double" />
+  <key id="d5" for="node" attr.name="selected" attr.type="boolean" />
+  <key id="d4" for="node" attr.name="composite_percentile" attr.type="double" />
+  <key id="d3" for="node" attr.name="community" attr.type="long" />
+  <key id="d2" for="node" attr.name="string_preferred_name" attr.type="string" />
+  <key id="d1" for="node" attr.name="string_id" attr.type="string" />
+  <key id="d0" for="node" attr.name="mapping_status" attr.type="string" />
+  <graph edgedefault="undirected">
+    <node id="ACSL6">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000498260</data>
+      <data key="d2">ACSL6</data>
+      <data key="d3">9</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="AFF1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000378578</data>
+      <data key="d2">AFF1</data>
+      <data key="d3">10</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="AFF3">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000386834</data>
+      <data key="d2">AFF3</data>
+      <data key="d3">11</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="BRCA1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000418960</data>
+      <data key="d2">BRCA1</data>
+      <data key="d3">1</data>
+      <data key="d4">0.7852112676056338</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CAMTA1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000306522</data>
+      <data key="d2">CAMTA1</data>
+      <data key="d3">12</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CBFA2T3">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000268679</data>
+      <data key="d2">CBFA2T3</data>
+      <data key="d3">13</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CCND2">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000261254</data>
+      <data key="d2">CCND2</data>
+      <data key="d3">14</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CDKN2A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000418915</data>
+      <data key="d2">CDKN2A</data>
+      <data key="d3">3</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="CEBPA">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000427514</data>
+      <data key="d2">CEBPA</data>
+      <data key="d3">15</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CHD4">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000440542</data>
+      <data key="d2">CHD4</data>
+      <data key="d3">4</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="CIITA">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000485010</data>
+      <data key="d2">CIITA</data>
+      <data key="d3">16</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CRTC3">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000268184</data>
+      <data key="d2">CRTC3</data>
+      <data key="d3">17</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="CTCF">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000494538</data>
+      <data key="d2">CTCF</data>
+      <data key="d3">18</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="DDX6">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000478754</data>
+      <data key="d2">DDX6</data>
+      <data key="d3">19</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="EGFR">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000275493</data>
+      <data key="d2">EGFR</data>
+      <data key="d3">5</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="ELN">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000351807</data>
+      <data key="d2">ELN</data>
+      <data key="d3">20</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="ETV4">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000321835</data>
+      <data key="d2">ETV4</data>
+      <data key="d3">21</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="FLI1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000433488</data>
+      <data key="d2">FLI1</data>
+      <data key="d3">2</data>
+      <data key="d4">0.7834507042253521</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="FOXO1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000368880</data>
+      <data key="d2">FOXO1</data>
+      <data key="d3">22</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="GNA11">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000078429</data>
+      <data key="d2">GNA11</data>
+      <data key="d3">23</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="GNAS">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000360141</data>
+      <data key="d2">GNAS</data>
+      <data key="d3">6</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="GPC3">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000377836</data>
+      <data key="d2">GPC3</data>
+      <data key="d3">24</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="H3F3A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000254810</data>
+      <data key="d2">H3-3B</data>
+      <data key="d3">4</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="HIF1A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000437955</data>
+      <data key="d2">HIF1A</data>
+      <data key="d3">25</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="HLF">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000226067</data>
+      <data key="d2">HLF</data>
+      <data key="d3">26</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="HNF1A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000438804</data>
+      <data key="d2">HNF1A</data>
+      <data key="d3">27</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="HOXC11">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000446680</data>
+      <data key="d2">HOXC11</data>
+      <data key="d3">28</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="HOXC13">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000243056</data>
+      <data key="d2">HOXC13</data>
+      <data key="d3">29</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="IL6ST">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000370698</data>
+      <data key="d2">IL6ST</data>
+      <data key="d3">7</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="KDR">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000263923</data>
+      <data key="d2">KDR</data>
+      <data key="d3">30</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="KDSR">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000494352</data>
+      <data key="d2">KDSR</data>
+      <data key="d3">31</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="KMT2C">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000262189</data>
+      <data key="d2">KMT2C</data>
+      <data key="d3">32</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="SPEN">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000364912</data>
+      <data key="d2">SPEN</data>
+      <data key="d3">53</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="KTN1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000378725</data>
+      <data key="d2">KTN1</data>
+      <data key="d3">33</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="LEF1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000265165</data>
+      <data key="d2">LEF1</data>
+      <data key="d3">34</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="LIFR">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000398368</data>
+      <data key="d2">LIFR</data>
+      <data key="d3">7</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="LPP">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000491657</data>
+      <data key="d2">LPP</data>
+      <data key="d3">35</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="LZTR1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000496779</data>
+      <data key="d2">LZTR1</data>
+      <data key="d3">36</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="MAP2K1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000302486</data>
+      <data key="d2">MAP2K1</data>
+      <data key="d3">37</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="MAP3K13">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000265026</data>
+      <data key="d2">MAP3K13</data>
+      <data key="d3">38</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="MDM2">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000258149</data>
+      <data key="d2">MDM2</data>
+      <data key="d3">3</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="MKL1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000498671</data>
+      <data key="d2">MRTFA</data>
+      <data key="d3">39</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="MSH2">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000233146</data>
+      <data key="d2">MSH2</data>
+      <data key="d3">1</data>
+      <data key="d4">0.9929577464788732</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="MSH6">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000234420</data>
+      <data key="d2">MSH6</data>
+      <data key="d3">1</data>
+      <data key="d4">0.9929577464788732</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="MTCP1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000358488</data>
+      <data key="d2">MTCP1</data>
+      <data key="d3">8</data>
+      <data key="d4">0.75</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="MYH11">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000379616</data>
+      <data key="d2">MYH11</data>
+      <data key="d3">40</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="NCKIPSD">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000294129</data>
+      <data key="d2">NCKIPSD</data>
+      <data key="d3">41</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="NFIB">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000370340</data>
+      <data key="d2">NFIB</data>
+      <data key="d3">42</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PDE4DIP">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000358363</data>
+      <data key="d2">PDE4DIP</data>
+      <data key="d3">43</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PIK3CA">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000263967</data>
+      <data key="d2">PIK3CA</data>
+      <data key="d3">5</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="POT1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000350249</data>
+      <data key="d2">POT1</data>
+      <data key="d3">44</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PPFIBP1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000314724</data>
+      <data key="d2">PPFIBP1</data>
+      <data key="d3">45</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PPP6C">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000392147</data>
+      <data key="d2">PPP6C</data>
+      <data key="d3">46</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PTPRB">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000334928</data>
+      <data key="d2">PTPRB</data>
+      <data key="d3">47</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="PTPRT">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000362294</data>
+      <data key="d2">PTPRT</data>
+      <data key="d3">48</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="RAP1GDS1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000340454</data>
+      <data key="d2">RAP1GDS1</data>
+      <data key="d3">49</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="RB1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000267163</data>
+      <data key="d2">RB1</data>
+      <data key="d3">50</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="RECQL4">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000482313</data>
+      <data key="d2">RECQL4</data>
+      <data key="d3">51</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="RSPO2">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000276659</data>
+      <data key="d2">RSPO2</data>
+      <data key="d3">52</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="RUNX1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000300305</data>
+      <data key="d2">RUNX1</data>
+      <data key="d3">2</data>
+      <data key="d4">0.8327464788732395</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="STAG2">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000218089</data>
+      <data key="d2">STAG2</data>
+      <data key="d3">54</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="TAL1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000294339</data>
+      <data key="d2">TAL1</data>
+      <data key="d3">2</data>
+      <data key="d4">0.829225352112676</data>
+      <data key="d5">True</data>
+    </node>
+    <node id="TCEA1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000428426</data>
+      <data key="d2">TCEA1</data>
+      <data key="d3">55</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="TCL1A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000451506</data>
+      <data key="d2">TCL1A</data>
+      <data key="d3">8</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="TFEB">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000351742</data>
+      <data key="d2">TFEB</data>
+      <data key="d3">56</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="TSHR">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000441235</data>
+      <data key="d2">TSHR</data>
+      <data key="d3">6</data>
+      <data key="d4">0.75</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="UBR5">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000429084</data>
+      <data key="d2">UBR5</data>
+      <data key="d3">57</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="VTI1A">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000376792</data>
+      <data key="d2">VTI1A</data>
+      <data key="d3">58</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="WT1">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000368370</data>
+      <data key="d2">WT1</data>
+      <data key="d3">59</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="XPC">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000285021</data>
+      <data key="d2">XPC</data>
+      <data key="d3">1</data>
+      <data key="d4">0.7887323943661972</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="ZBTB16">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000338157</data>
+      <data key="d2">ZBTB16</data>
+      <data key="d3">60</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <node id="ZFHX3">
+      <data key="d0">mapped</data>
+      <data key="d1">9606.ENSP00000493252</data>
+      <data key="d2">ZFHX3</data>
+      <data key="d3">61</data>
+      <data key="d4">0.3961267605633803</data>
+      <data key="d5">False</data>
+    </node>
+    <edge source="BRCA1" target="MSH2">
+      <data key="d6">0.7395411887382691</data>
+      <data key="d7">1.352189729562054</data>
+    </edge>
+    <edge source="BRCA1" target="MSH6">
+      <data key="d6">0.7395411887382691</data>
+      <data key="d7">1.352189729562054</data>
+    </edge>
+    <edge source="CDKN2A" target="MDM2">
+      <data key="d6">0.9447340980187696</data>
+      <data key="d7">1.0584988962472406</data>
+    </edge>
+    <edge source="CHD4" target="H3F3A">
+      <data key="d6">0.902</data>
+      <data key="d7">1.1086474501108647</data>
+    </edge>
+    <edge source="EGFR" target="PIK3CA">
+      <data key="d6">0.718456725755996</data>
+      <data key="d7">1.3918722786647313</data>
+    </edge>
+    <edge source="FLI1" target="RUNX1">
+      <data key="d6">0.8123044838373306</data>
+      <data key="d7">1.2310654685494222</data>
+    </edge>
+    <edge source="FLI1" target="TAL1">
+      <data key="d6">0.8</data>
+      <data key="d7">1.25</data>
+    </edge>
+    <edge source="GNAS" target="TSHR">
+      <data key="d6">0.9</data>
+      <data key="d7">1.1111111111111112</data>
+    </edge>
+    <edge source="IL6ST" target="LIFR">
+      <data key="d6">0.9433785192909281</data>
+      <data key="d7">1.060019896098154</data>
+    </edge>
+    <edge source="MSH2" target="MSH6">
+      <data key="d6">0.997497393117831</data>
+      <data key="d7">1.0025088856366298</data>
+    </edge>
+    <edge source="MSH2" target="XPC">
+      <data key="d6">0.9</data>
+      <data key="d7">1.1111111111111112</data>
+    </edge>
+    <edge source="MSH6" target="XPC">
+      <data key="d6">0.9</data>
+      <data key="d7">1.1111111111111112</data>
+    </edge>
+    <edge source="MTCP1" target="TCL1A">
+      <data key="d6">0.9</data>
+      <data key="d7">1.1111111111111112</data>
+    </edge>
+    <edge source="RUNX1" target="TAL1">
+      <data key="d6">0.8867570385818561</data>
+      <data key="d7">1.1277046095954846</data>
+    </edge>
+  </graph>
+</graphml>
