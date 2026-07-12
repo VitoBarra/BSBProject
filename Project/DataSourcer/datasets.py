@@ -30,20 +30,7 @@ GSE103001_PROFILE = DatasetProfile(
     transcriptome_url="https://ftp.ensembl.org/pub/release-115/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz",
 )
 
-GSE210787_PROFILE = DatasetProfile(
-    key="gse210787",
-    accession="GSE210787",
-    soft_url="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE210nnn/GSE210787/soft/GSE210787_family.soft.gz",
-)
-
-GSE31210_PROFILE = DatasetProfile(
-    key="gse31210",
-    accession="GSE31210",
-    soft_url="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE31nnn/GSE31210/soft/GSE31210_family.soft.gz",
-)
 
 PROFILES = {
     GSE103001_PROFILE.key: GSE103001_PROFILE,
-    GSE210787_PROFILE.key: GSE210787_PROFILE,
-    GSE31210_PROFILE.key: GSE31210_PROFILE,
 }
