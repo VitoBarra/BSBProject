@@ -7,8 +7,6 @@ from typing import Callable
 from .datasets import (
     DatasetProfile,
     GSE103001_PROFILE,
-    GSE210787_PROFILE,
-    GSE31210_PROFILE,
     PROFILES,
 )
 
@@ -77,12 +75,8 @@ def build_metadata_table(config: DataSourceConfig) -> Path:
 
 
 from .GSE103001_metadata_extractor import build_metadata_table as build_gse103001_metadata_table
-from .GSE210787_metadata_extractor import build_metadata_table as build_gse210787_metadata_table
-from .GSE31210_metadata_extractor import build_metadata_table as build_gse31210_metadata_table
 from .download_reference_transcriptome import download_reference_transcriptome
 
 METADATA_BUILDERS: dict[str, MetadataBuilder] = {
     GSE103001_PROFILE.key: build_gse103001_metadata_table,
-    GSE210787_PROFILE.key: build_gse210787_metadata_table,
-    GSE31210_PROFILE.key: build_gse31210_metadata_table,
 }
