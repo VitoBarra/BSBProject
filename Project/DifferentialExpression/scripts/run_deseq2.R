@@ -196,7 +196,7 @@ direction_counts <- table(ma_df$direction)
 ma_legend_labels <- c(
   paste0("Up: ", direction_counts[["Up"]]),
   paste0("Down: ", direction_counts[["Down"]]),
-  "NS"
+  "NS (not Significant)"
 )
 
 ma_plot <- ggplot2::ggplot(
