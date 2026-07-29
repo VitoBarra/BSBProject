@@ -213,5 +213,17 @@ __marimo__/
 /Homework/data**
 /Project/data/**
 
+# Keep large/generated analysis inputs out of Git, but include the compact
+# Part 1 submission artefacts required to reproduce and review the report.
+!/Project/data/GSE103001/
+!/Project/data/GSE103001/GSE103001_selected_4pairs.tsv
+!/Project/data/GSE103001/de/
+/Project/data/GSE103001/de/**
+!/Project/data/GSE103001/de/sample_table.tsv
+!/Project/data/GSE103001/de/results/
+!/Project/data/GSE103001/de/results/**
+!/Project/data/GSE103001/enrichment/
+!/Project/data/GSE103001/enrichment/**
+
 ##Tools
 Project/.tools/
