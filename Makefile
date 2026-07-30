@@ -10,11 +10,11 @@ HOST_GID := $(shell id -g)
 DOCKER_USER := --user "$(HOST_UID):$(HOST_GID)"
 endif
 
-DOCKER_RUN := docker run --rm $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
-DOCKER_SHELL := docker run --rm -it $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
+DOCKER_RUN := docker run --rm $(DOCKER_USER) -e HOME=/tmp -e PYTHONHASHSEED=0 -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
+DOCKER_SHELL := docker run --rm -it $(DOCKER_USER) -e HOME=/tmp -e PYTHONHASHSEED=0 -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
 PYTHON := python3
 
-.PHONY: help docker-build shell run prepare-dea dea-plots enrichment analysis multiqc-raw multiqc-clean multiqc-compare
+.PHONY: help docker-build shell run prepare-dea dea-plots enrichment analysis multiqc-raw multiqc-clean network-bc-download network-bc-analyze network-bc network-disgenet-download
 
 help:
 	@echo "Targets:"
@@ -33,7 +33,12 @@ help:
 	@echo "  multiqc-clean  Generate a MultiQC report from trimmed FastQC and fastp results"
 	@echo "  enrichment     Run GO enrichment and write the raw result table"
 	@echo "  enrichment-plots  Generate GO tables, summary, and plot with Python"
-	@echo "  analysis       Run DEA followed by enrichment"
+	@echo "  analysis       Run the complete Module 1 workflow from download through enrichment"
+	@echo "  network-bc-download  Download class-filtered physical STRING network (experiments/databases >= 0.70)"
+	@echo "  network-bc-analyze   Calculate BC centralities, community significance, and final module"
+	@echo "  network-bc           Download and analyze the BC network"
+	@echo "  network-disgenet-download  Download all curated RA and DM associations"
+	@echo "  network-separation  Build class-filtered joint STRING network and compare BC with RA and DM"
 	@echo "  shell          Open a shell inside the analysis container"
 
 docker-build:
@@ -89,6 +94,26 @@ analysis:
 	$(MAKE) prepare-reads
 	$(MAKE) prepare-quantification
 	$(MAKE) run ARGS="--prepare-dea-inputs --run-dea --plot-dea-results --run-enrichment --plot-enrichment-results"
+
+network-bc-download:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.bc_network download --score-threshold 0.70 --network-type physical
+
+network-bc-analyze:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.bc_network analyze --target-size 10 --seed 42 --null-iterations 500
+
+network-bc: network-bc-download network-bc-analyze
+
+network-disgenet-download:
+	@test -f .env.local || (echo "Missing .env.local with DISGENET_API_KEY" && exit 1)
+	docker run --rm $(DOCKER_USER) --env-file .env.local -e HOME=/tmp -e PYTHONHASHSEED=0 -v "$(PROJECT_DIR):/project" -w /project $(IMAGE) $(PYTHON) -m NetworkMedicine.disgenet_download
+
+network-separation-download:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.disease_separation download --score-threshold 0.70 --network-type physical --additional-interactors 650
+
+network-separation-analyze:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.disease_separation analyze
+
+network-separation: network-separation-download network-separation-analyze
 
 shell:
 	$(DOCKER_SHELL) bash
