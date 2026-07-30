@@ -18,6 +18,7 @@ RUN apt-get update \
     && /opt/bsbproject-python/bin/pip install --no-cache-dir \
         matplotlib~=3.10.8 \
         multiqc \
+        networkx~=3.6.1 \
         numpy~=2.4.1 \
     && Rscript -e "BiocManager::install(c('DESeq2', 'SummarizedExperiment', 'clusterProfiler', 'org.Hs.eg.db', 'AnnotationDbi'), ask = FALSE, update = FALSE)" \
     && Rscript -e "install.packages('ggplot2', repos = 'https://cloud.r-project.org')"

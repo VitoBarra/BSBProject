@@ -136,6 +136,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
 .envrc
 .venv
 env/
@@ -212,6 +213,16 @@ __marimo__/
 ## data
 /Homework/data**
 /Project/data/**
+
+# Keep compact Part 2 network-medicine inputs and deliverables. Raw API
+# responses remain ignored and can be regenerated with the Makefile.
+!/Project/data/network_medicine/
+/Project/data/network_medicine/raw/
+!/Project/data/network_medicine/README.md
+!/Project/data/network_medicine/processed/
+!/Project/data/network_medicine/processed/**
+!/Project/data/network_medicine/results/
+!/Project/data/network_medicine/results/**
 
 # Keep large/generated analysis inputs out of Git, but include the compact
 # Part 1 submission artefacts required to reproduce and review the report.

@@ -14,7 +14,7 @@ DOCKER_RUN := docker run --rm $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/pr
 DOCKER_SHELL := docker run --rm -it $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
 PYTHON := python3
 
-.PHONY: help docker-build shell run prepare-dea dea plots enrichment analysis multiqc-raw multiqc-clean multiqc-compare
+.PHONY: help docker-build shell run prepare-dea dea plots enrichment analysis multiqc-raw multiqc-clean network-bc-download network-bc-analyze network-bc network-disgenet-download
 
 help:
 	@echo "Targets:"
@@ -27,6 +27,10 @@ help:
 	@echo "  multiqc-clean  Generate a MultiQC report from trimmed FastQC and fastp results"
 	@echo "  enrichment     Run GO enrichment from DESeq2 results"
 	@echo "  analysis       Run DEA followed by enrichment"
+	@echo "  network-bc-download  Download the 72-gene induced STRING network (score >= 0.80)"
+	@echo "  network-bc-analyze   Calculate BC centralities, communities, and preliminary module"
+	@echo "  network-bc           Download and analyze the BC network"
+	@echo "  network-disgenet-download  Download all curated RA and DM associations"
 	@echo "  shell          Open a shell inside the analysis container"
 
 docker-build:
@@ -55,6 +59,18 @@ enrichment:
 
 analysis:
 	$(MAKE) run ARGS="--prepare-dea-inputs --run-dea --run-enrichment"
+
+network-bc-download:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.bc_network download --score-threshold 0.80 --network-type functional
+
+network-bc-analyze:
+	$(DOCKER_RUN) $(PYTHON) -m NetworkMedicine.bc_network analyze --target-size 20 --seed 42
+
+network-bc: network-bc-download network-bc-analyze
+
+network-disgenet-download:
+	@test -f .env.local || (echo "Missing .env.local with DISGENET_API_KEY" && exit 1)
+	docker run --rm $(DOCKER_USER) --env-file .env.local -e HOME=/tmp -v "$(PROJECT_DIR):/project" -w /project $(IMAGE) $(PYTHON) -m NetworkMedicine.disgenet_download
 
 shell:
 	$(DOCKER_SHELL) bash
