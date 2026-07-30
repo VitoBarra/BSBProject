@@ -47,10 +47,18 @@ def parse_samples(soft_path: Path) -> list[SampleRecord]:
     return samples
 
 
-def choose_patients(samples: list[SampleRecord], num_pairs: int, required_conditions: set[str]) -> list[str]:
+def choose_patients(
+    samples: list[SampleRecord],
+    num_pairs: int,
+    required_conditions: set[str],
+    excluded_sample_ids: set[str] | None = None,
+) -> list[str]:
+    excluded = excluded_sample_ids or set()
     patients = sorted({sample.sample_id for sample in samples})
     selected: list[str] = []
     for patient in patients:
+        if patient in excluded:
+            continue
         conditions = {s.condition for s in samples if s.sample_id == patient}
         if required_conditions.issubset(conditions):
             selected.append(patient)
@@ -69,7 +77,12 @@ def build_metadata_table(config: DataSourceConfig) -> Path:
     log(f"Requested matched pairs: {config.num_pairs}", LOG_PREFIX)
     soft_path = ensure_soft_file(config.resolved_soft_path(), profile.soft_url, LOG_PREFIX)
     samples = parse_samples(soft_path)
-    selected_patients = choose_patients(samples, config.num_pairs, set(profile.required_conditions))
+    selected_patients = choose_patients(
+        samples,
+        config.num_pairs,
+        set(profile.required_conditions),
+        set(profile.excluded_sample_ids),
+    )
     if len(selected_patients) < config.num_pairs:
         raise RuntimeError(f"Only found {len(selected_patients)} complete matched pairs in {profile.accession}")
 
