@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import csv
 from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
-from time import perf_counter
+from time import perf_counter, sleep
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from . import DataSourceConfig
@@ -13,11 +14,18 @@ from Log.log_util import WorkerProgressDisplay, format_size, format_worker_progr
 LOG_PREFIX = "download_fastq"
 REQUIRED_FASTQ_COLUMNS = {"sample_id", "fastq_url"}
 MIN_SPEED_BPS = 256 * 1024
-MIN_SPEED_GRACE_SECONDS = 30
-MAX_RESTARTS_PER_FILE = 3
+MIN_SPEED_GRACE_SECONDS = 120
+RETRY_DELAY_SECONDS = 30
+MAX_RESTARTS_PER_FILE = 20
+RETRYABLE_HTTP_CODES = {403, 408, 429, 500, 502, 503, 504}
+USER_AGENT = "BSBProject-GSE103001/1.0"
 
 
 class SlowDownloadError(RuntimeError):
+    pass
+
+
+class IncompleteDownloadError(RuntimeError):
     pass
 
 
@@ -51,23 +59,44 @@ def _log(message: str) -> None:
     PROGRESS.log(f"[{LOG_PREFIX}] {message}")
 
 
+def _remote_size(url: str) -> int | None:
+    request = Request(url, method="HEAD", headers={"User-Agent": USER_AGENT})
+    with urlopen(request, timeout=60) as response:
+        content_length = response.headers.get("Content-Length")
+        return int(content_length) if content_length and content_length.isdigit() else None
+
+
 def _download_file_once(url: str, destination: Path, index: int, total_files: int, sample_id: str, slot: int) -> None:
     if destination.exists():
-        PROGRESS.finish(slot, f"[{index}/{total_files}] {sample_id} {destination.name} | already present")
-        return
+        expected_bytes = _remote_size(url)
+        actual_bytes = destination.stat().st_size
+        if expected_bytes is None or actual_bytes == expected_bytes:
+            PROGRESS.finish(slot, f"[{index}/{total_files}] {sample_id} {destination.name} | already present")
+            return
+
+        partial_destination = destination.with_name(f"{destination.name}.part")
+        if partial_destination.exists():
+            raise FileExistsError(
+                f"Both an incomplete final file and partial file exist: {destination}, {partial_destination}"
+            )
+        _log(
+            f"[{index}/{total_files}] Existing file is incomplete "
+            f"({format_size(actual_bytes)}/{format_size(expected_bytes)}); resuming it"
+        )
+        destination.replace(partial_destination)
 
     _log(f"[{index}/{total_files}] Downloading {sample_id}: {destination.name}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     partial_destination = destination.with_name(f"{destination.name}.part")
     existing_bytes = partial_destination.stat().st_size if partial_destination.exists() else 0
-    request = Request(url)
+    request = Request(url, headers={"User-Agent": USER_AGENT})
     if existing_bytes > 0:
         request.add_header("Range", f"bytes={existing_bytes}-")
         _log(
             f"[{index}/{total_files}] Found partial file, trying resume from {format_size(existing_bytes)}: {partial_destination.name}"
         )
 
-    with urlopen(request) as response:
+    with urlopen(request, timeout=120) as response:
         status_code = getattr(response, "status", None)
         resumed = existing_bytes > 0 and status_code == 206
         if existing_bytes > 0 and not resumed:
@@ -116,6 +145,11 @@ def _download_file_once(url: str, destination: Path, index: int, total_files: in
                 else:
                     low_speed_started_at = None
 
+    if total_bytes is not None and downloaded != total_bytes:
+        raise IncompleteDownloadError(
+            f"Connection ended after {format_size(downloaded)}; expected {format_size(total_bytes)}"
+        )
+
     partial_destination.replace(destination)
     PROGRESS.finish(
         slot,
@@ -129,16 +163,19 @@ def download_file(url: str, destination: Path, index: int, total_files: int, sam
             try:
                 _download_file_once(url, destination, index, total_files, sample_id, slot)
                 return
-            except SlowDownloadError as exc:
+            except (SlowDownloadError, IncompleteDownloadError, HTTPError, URLError, TimeoutError) as exc:
+                if isinstance(exc, HTTPError) and exc.code not in RETRYABLE_HTTP_CODES:
+                    raise
                 _log(
-                    f"[{index}/{total_files}] Slow download detected for {destination.name} "
+                    f"[{index}/{total_files}] Transient download failure for {destination.name} "
                     f"(attempt {attempt}/{MAX_RESTARTS_PER_FILE}): {exc}"
                 )
                 if attempt == MAX_RESTARTS_PER_FILE:
                     raise RuntimeError(
-                        f"Download kept stalling for {destination.name} after {MAX_RESTARTS_PER_FILE} attempts"
+                        f"Download failed for {destination.name} after {MAX_RESTARTS_PER_FILE} attempts"
                     ) from exc
-                _log(f"[{index}/{total_files}] Restarting download for {destination.name}")
+                _log(f"[{index}/{total_files}] Retrying in {RETRY_DELAY_SECONDS}s: {destination.name}")
+                sleep(RETRY_DELAY_SECONDS)
 
 
 def download_fastq_from_tsv(config: DataSourceConfig) -> Path:
