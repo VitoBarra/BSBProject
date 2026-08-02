@@ -1,7 +1,5 @@
 #!/usr/bin/env Rscript
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
 parse_args <- function(args) {
   values <- list()
   i <- 1
@@ -31,43 +29,37 @@ require_package <- function(pkg) {
 }
 
 args <- parse_args(commandArgs(trailingOnly = TRUE))
-de_results_path <- args[["de-results"]]
+selected_genes_path <- args[["selected-genes"]]
+universe_genes_path <- args[["universe-genes"]]
 outdir <- args[["outdir"]]
-padj_cutoff <- as.numeric(args[["padj-cutoff"]] %||% "0.05")
-lfc_cutoff <- as.numeric(args[["lfc-cutoff"]] %||% "0")
 
-if (is.null(de_results_path) || is.null(outdir)) {
-  stop("Usage: run_go_enrichment.R --de-results deseq2_all_genes.csv --outdir enrichment_dir")
+if (is.null(selected_genes_path) || is.null(universe_genes_path) || is.null(outdir)) {
+  stop(
+    "Usage: run_go_enrichment.R --selected-genes selected.txt ",
+    "--universe-genes universe.txt --outdir enrichment_dir"
+  )
 }
 
 require_package("clusterProfiler")
 require_package("org.Hs.eg.db")
-require_package("AnnotationDbi")
-require_package("ggplot2")
+
+selected_genes <- unique(readLines(selected_genes_path, warn = FALSE))
+universe_genes <- unique(readLines(universe_genes_path, warn = FALSE))
+selected_genes <- selected_genes[nzchar(selected_genes)]
+universe_genes <- universe_genes[nzchar(universe_genes)]
+if (length(selected_genes) == 0) {
+  stop("Selected gene list is empty")
+}
+if (length(universe_genes) == 0) {
+  stop("Gene universe is empty")
+}
 
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
-de <- read.csv(de_results_path, stringsAsFactors = FALSE)
-required_cols <- c("gene_id", "padj", "log2FoldChange")
-missing_cols <- setdiff(required_cols, colnames(de))
-if (length(missing_cols) > 0) {
-  stop("DE table is missing columns: ", paste(missing_cols, collapse = ", "))
-}
-
-clean_ensembl <- sub("\\..*$", "", de$gene_id)
-sig <- de[
-  !is.na(de$padj) &
-    de$padj < padj_cutoff &
-    !is.na(de$log2FoldChange) &
-    abs(de$log2FoldChange) >= lfc_cutoff,
-]
-sig_ensembl <- unique(sub("\\..*$", "", sig$gene_id))
-universe_ensembl <- unique(clean_ensembl[!is.na(de$padj)])
-
 run_one <- function(ontology) {
   clusterProfiler::enrichGO(
-    gene = sig_ensembl,
-    universe = universe_ensembl,
+    gene = selected_genes,
+    universe = universe_genes,
     OrgDb = org.Hs.eg.db::org.Hs.eg.db,
     keyType = "ENSEMBL",
     ont = ontology,
@@ -81,50 +73,23 @@ run_one <- function(ontology) {
 ego_list <- list(BP = run_one("BP"), MF = run_one("MF"), CC = run_one("CC"))
 all_results <- do.call(
   rbind,
-  lapply(names(ego_list), function(ont) {
-    df <- as.data.frame(ego_list[[ont]])
-    if (nrow(df) == 0) {
+  lapply(names(ego_list), function(ontology) {
+    result <- as.data.frame(ego_list[[ontology]])
+    if (nrow(result) == 0) {
       return(NULL)
     }
-    df$ontology <- ont
-    df
+    result$ontology <- ontology
+    result
   })
 )
 
 if (is.null(all_results)) {
-  all_results <- data.frame()
-}
-
-if (nrow(all_results) > 0) {
-  all_results <- all_results[order(all_results$p.adjust, all_results$pvalue, na.last = TRUE), ]
+  all_results <- data.frame(
+    ID = character(), Description = character(), GeneRatio = character(), BgRatio = character(),
+    RichFactor = numeric(), FoldEnrichment = numeric(), zScore = numeric(), pvalue = numeric(),
+    p.adjust = numeric(), qvalue = numeric(), geneID = character(), Count = integer(),
+    ontology = character()
+  )
 }
 
 write.csv(all_results, file.path(outdir, "go_overrepresentation_all.csv"), row.names = FALSE)
-significant <- all_results[!is.na(all_results$p.adjust) & all_results$p.adjust < 0.05, , drop = FALSE]
-write.csv(significant, file.path(outdir, "go_overrepresentation_significant.csv"), row.names = FALSE)
-
-summary_path <- file.path(outdir, "enrichment_summary.txt")
-sink(summary_path)
-cat("GO over-representation analysis\n")
-cat("Input DE table:", de_results_path, "\n")
-cat("padj cutoff:", padj_cutoff, "\n")
-cat("absolute log2FC cutoff:", lfc_cutoff, "\n")
-cat("Tested genes:", length(universe_ensembl), "\n")
-cat("Significant genes:", length(sig_ensembl), "\n")
-cat("GO terms tested:", nrow(all_results), "\n")
-cat("GO terms significant at padj < 0.05:", nrow(significant), "\n")
-sink()
-
-if (nrow(significant) > 0) {
-  top_terms <- head(significant, 20)
-  top_terms$Description <- factor(top_terms$Description, levels = rev(top_terms$Description))
-  plot <- ggplot2::ggplot(
-    top_terms,
-    ggplot2::aes(x = Description, y = -log10(p.adjust), size = Count, color = ontology)
-  ) +
-    ggplot2::geom_point(alpha = 0.8) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(x = NULL, y = "-log10 adjusted p-value", size = "Genes", color = "Ontology") +
-    ggplot2::theme_minimal(base_size = 10)
-  ggplot2::ggsave(file.path(outdir, "go_overrepresentation_dotplot.pdf"), plot, width = 8, height = 6)
-}

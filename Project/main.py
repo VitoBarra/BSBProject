@@ -5,7 +5,7 @@ import argparse
 from RNA_seq.DataSourcer import DataSourceConfig, PROFILES, build_metadata_table, download_reference_transcriptome
 from RNA_seq.DataSourcer.download_fastq import download_fastq_from_tsv
 from RNA_seq.DifferentialExpression import *
-from RNA_seq.Enrichment import EnrichmentConfig, run_go_enrichment
+from RNA_seq.Enrichment import EnrichmentConfig, generate_go_enrichment_plots, run_go_enrichment_analysis
 from RNA_seq.QualityControl import QualityControlConfig, run_fastp, run_fastqc, run_multiqc
 from RNA_seq.Quantification import QuantificationConfig, run_salmon
 
@@ -96,6 +96,12 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--run-dea", default=False, action="store_true", help="Run paired DESeq2 differential expression analysis.")
     parser.add_argument(
+        "--plot-dea-results",
+        default=False,
+        action="store_true",
+        help="Generate DEA result tables and plots with Python from existing DESeq2 outputs.",
+    )
+    parser.add_argument(
         "--prepare-dea-inputs",
         default=False,
         action="store_true",
@@ -115,6 +121,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--de-min-samples", type=int, default=2, help="Minimum number of samples passing --de-min-count.")
 
     parser.add_argument("--run-enrichment", default=False, action="store_true", help="Run GO over-representation analysis from DESeq2 results.")
+    parser.add_argument(
+        "--plot-enrichment-results",
+        default=False,
+        action="store_true",
+        help="Generate GO result tables, summary, and plots with Python from existing enrichment outputs.",
+    )
     parser.add_argument("--de-results-path", type=Path, default=None, help="Optional DESeq2 all-genes CSV for enrichment.")
     parser.add_argument("--enrichment-dir", type=Path, default=None, help="Optional output directory for enrichment results.")
     parser.add_argument("--enrichment-padj-cutoff", type=float, default=0.05, help="Adjusted p-value cutoff for enrichment input genes.")
@@ -226,10 +238,16 @@ def main() -> int:
         build_salmon_gene_matrices(aggregation_config)
 
     if args.run_dea:
-        run_deseq2(de_config)
+        run_deseq2_analysis(de_config)
+
+    if args.plot_dea_results:
+        generate_deseq2_plots(de_config)
 
     if args.run_enrichment:
-        run_go_enrichment(enrichment_config)
+        run_go_enrichment_analysis(enrichment_config)
+
+    if args.plot_enrichment_results:
+        generate_go_enrichment_plots(enrichment_config)
 
     return 0
 

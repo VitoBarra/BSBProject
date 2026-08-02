@@ -14,18 +14,19 @@ DOCKER_RUN := docker run --rm $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/pr
 DOCKER_SHELL := docker run --rm -it $(DOCKER_USER) -e HOME=/tmp -v "$(PROJECT_DIR):/project" -w /project $(IMAGE)
 PYTHON := python3
 
-.PHONY: help docker-build shell run prepare-dea dea plots enrichment analysis multiqc-raw multiqc-clean multiqc-compare
+.PHONY: help docker-build shell run prepare-dea dea-plots enrichment analysis multiqc-raw multiqc-clean multiqc-compare
 
 help:
 	@echo "Targets:"
 	@echo "  docker-build   Build the Docker image with Python, R, DESeq2, and enrichment packages"
 	@echo "  run ARGS=...   Run Project/main.py inside the Docker container"
 	@echo "  prepare-dea    Aggregate Salmon transcript estimates into gene-level DEA inputs"
-	@echo "  dea            Run paired DESeq2 differential expression analysis"
-	@echo "  plots          Regenerate DEA plots from existing result tables"
+	@echo "  dea            Run paired DESeq2 and write analysis tables"
+	@echo "  dea-plots      Generate DEA plots from existing tables with Python"
 	@echo "  multiqc-raw    Generate a MultiQC report from raw FastQC results"
 	@echo "  multiqc-clean  Generate a MultiQC report from trimmed FastQC and fastp results"
-	@echo "  enrichment     Run GO enrichment from DESeq2 results"
+	@echo "  enrichment     Run GO enrichment and write the raw result table"
+	@echo "  enrichment-plots  Generate GO tables, summary, and plot with Python"
 	@echo "  analysis       Run DEA followed by enrichment"
 	@echo "  shell          Open a shell inside the analysis container"
 
@@ -41,8 +42,8 @@ prepare-dea:
 dea:
 	$(MAKE) run ARGS="--run-dea"
 
-plots:
-	$(DOCKER_RUN) Rscript DifferentialExpression/scripts/plot_de_results.R data/GSE103001/de/results/deseq2_all_genes.csv data/GSE103001/de/results/normalized_counts.csv data/GSE103001/de/sample_table.tsv data/GSE103001/de/results
+dea-plots:
+	$(MAKE) run ARGS="--plot-dea-results"
 
 multiqc-raw:
 	$(DOCKER_RUN) multiqc --force --dirs --dirs-depth 1 --outdir /project/data/GSE103001/qc/multiqc_raw --filename multiqc_raw.html /project/data/GSE103001/qc/fastqc
@@ -53,8 +54,11 @@ multiqc-clean:
 enrichment:
 	$(MAKE) run ARGS="--run-enrichment"
 
+enrichment-plots:
+	$(MAKE) run ARGS="--plot-enrichment-results"
+
 analysis:
-	$(MAKE) run ARGS="--prepare-dea-inputs --run-dea --run-enrichment"
+	$(MAKE) run ARGS="--prepare-dea-inputs --run-dea --plot-dea-results --run-enrichment --plot-enrichment-results"
 
 shell:
 	$(DOCKER_SHELL) bash
