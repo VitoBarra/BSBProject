@@ -1,8 +1,8 @@
 ---
-title: "Paired RNA-seq analysis of ER-positive breast cancer"
+title: "Paired RNA_seq analysis of ER-positive breast cancer"
 subtitle: "GSE103001: tumor versus matched adjacent non-malignant tissue"
 author: "Vito Barra"
-date: "June 2026"
+date: "July 2026"
 ---
 
 # Abstract
@@ -12,12 +12,13 @@ breast cancer RNA-seq dataset. Four patients were selected, providing four
 estrogen receptor-positive (ER+) tumors and four matched adjacent
 non-malignant tissues. Reads were quality controlled, trimmed, quantified
 against a current GRCh38 Ensembl transcriptome with Salmon, aggregated to the
-gene level, and analyzed with a paired DESeq2 model. After filtering, 16,903
-genes were tested and 4,676 were differentially expressed at an adjusted
+gene level, and analyzed with a paired DESeq2 model. After filtering, 17,729
+genes were tested and 3,393 were differentially expressed at an adjusted
 *p*-value below 0.05. Using the additional effect-size criterion
-|log2 fold change| >= 1, 1,578 genes were upregulated and 2,259 were
-downregulated in tumors. Gene Ontology enrichment highlighted angiogenesis,
-cell migration, proliferation, adhesion, and PI3K/AKT-related signaling.
+|log2 fold change| >= 1, 1,267 genes were upregulated and 1,704 were
+downregulated in tumors. Gene Ontology enrichment highlighted
+extracellular-matrix organization, adhesion, junctions, and growth-factor
+signaling.
 These results identify extensive tumor-associated transcriptional remodeling,
 although the low Salmon mapping rate and the small four-patient cohort limit
 the strength and generalizability of the conclusions.
@@ -45,15 +46,15 @@ transcript analysis from the original publication.
 ## 2.1 Dataset and paired design
 
 Raw sequencing data were obtained from GEO series **GSE103001**, SRA study
-**SRP116023**. The four selected patients were 12-02, 12-03, 13-02, and 13-03.
+**SRP116023**. The four selected patients were 12-03, 13-02, 13-03, and 13-05.
 Each contributed one tumor and one adjacent non-malignant sample:
 
 | Patient | Normal run | Tumor run |
 |---|---|---|
-| 12-02 | SRR5962198 | SRR5962220 |
 | 12-03 | SRR5962199 | SRR5962221 |
 | 13-02 | SRR5962200 | SRR5962222 |
 | 13-03 | SRR5962201 | SRR5962223 |
+| 13-05 | SRR5962202 | SRR5962224 |
 
 The matched structure was retained in the statistical model so that
 inter-patient variability was not incorrectly treated as part of the
@@ -63,19 +64,19 @@ tumor-versus-normal effect.
 
 FastQC was run before and after preprocessing. Reads were filtered and trimmed
 with fastp, and the reports were summarized with MultiQC. Across the eight
-samples, fastp retained **95.7–98.1%** of reads (mean 96.8%). The post-filtering
-Q30 rate ranged from **79.0% to 96.6%**.
+samples, fastp retained **95.9–99.3%** of reads (mean 97.7%). The post-filtering
+Q30 rate ranged from **80.7% to 96.6%**.
 
 | Run | Reads retained | Post-filter Q30 |
 |---|---:|---:|
-| SRR5962198 | 95.7% | 81.5% |
 | SRR5962199 | 95.9% | 80.7% |
 | SRR5962200 | 97.4% | 96.5% |
 | SRR5962201 | 97.9% | 96.5% |
-| SRR5962220 | 96.1% | 79.0% |
+| SRR5962202 | 99.2% | 89.8% |
 | SRR5962221 | 96.4% | 82.9% |
 | SRR5962222 | 98.1% | 96.5% |
 | SRR5962223 | 97.1% | 96.6% |
+| SRR5962224 | 99.3% | 89.7% |
 
 ## 2.3 Salmon quantification and gene aggregation
 
@@ -86,19 +87,19 @@ identifiers from the transcriptome FASTA headers. Transcript-level
 `NumReads` and TPM values were summed per gene to construct the gene count and
 gene TPM matrices.
 
-The Salmon mapping rate ranged from **10.2% to 44.2%**, with a mean of
-**25.3%**.
+The Salmon mapping rate ranged from **12.7% to 44.2%**, with a mean of
+**29.9%**.
 
 | Run | Salmon mapping rate |
 |---|---:|
-| SRR5962198 | 17.8% |
 | SRR5962199 | 12.7% |
 | SRR5962200 | 33.1% |
 | SRR5962201 | 44.2% |
-| SRR5962220 | 10.2% |
+| SRR5962202 | 26.1% |
 | SRR5962221 | 15.4% |
 | SRR5962222 | 34.9% |
 | SRR5962223 | 34.2% |
+| SRR5962224 | 38.4% |
 
 This relatively low mapping rate is an important limitation. The original
 libraries were generated from ribosomal-RNA-depleted total RNA, whereas the
@@ -138,12 +139,12 @@ significance threshold.
 
 ## 3.1 Differential expression
 
-After count filtering, **16,903 genes** were included in DESeq2. A total of
-**4,676 genes** had adjusted *p* < 0.05. Among these, **3,837 genes** also had
+After count filtering, **17,729 genes** were included in DESeq2. A total of
+**3,393 genes** had adjusted *p* < 0.05. Among these, **2,971 genes** also had
 |log2 fold change| >= 1:
 
-- 1,578 upregulated in tumor;
-- 2,259 downregulated in tumor.
+- 1,267 upregulated in tumor;
+- 1,704 downregulated in tumor.
 
 The large number of detected genes indicates a strong expression difference
 between tumor and adjacent tissue. However, with only four pairs, effect
@@ -152,7 +153,7 @@ patients, tissue composition, and the quantification limitations described
 above.
 
 Selected strongly upregulated genes included **MMP11**, **ESR1**, **GALNT7**,
-**COL11A1**, **CA12**, **COL10A1**, **LTF**, and **SCUBE2**. MMP11 and the
+**COL11A1**, **CA12**, **COL10A1**, **MKI67**, and **SCUBE2**. MMP11 and the
 collagen genes are consistent with extracellular-matrix and tumor-stroma
 remodeling, while ESR1, CA12, and SCUBE2 are compatible with the ER+ phenotype.
 
@@ -178,8 +179,8 @@ larger number of downregulated genes.
 
 Hierarchical clustering of the top 20 differentially expressed genes separated
 the four tumor samples from the four adjacent non-malignant samples. The
-separation is especially clear for genes such as TNS1, ACSL1, PDK4, CAVIN1,
-ALDH2, and MMP11.
+top-ranked set included **MMP11**, **COL11A1**, **COL10A1**, **ESR1**,
+**SCUBE2**, **TOP2A**, and **MKI67**.
 
 ![Clustered heatmap of the top 20 differentially expressed genes.](../data/GSE103001/de/results/top_de_gene_heatmap.png)
 
@@ -189,29 +190,31 @@ normal samples.
 
 ## 3.3 Gene Ontology enrichment
 
-The enrichment analysis tested 3,754 GO terms and identified **269 significant
-terms** at adjusted *p* < 0.05. The leading biological processes were related
-to vascular remodeling, migration, proliferation, adhesion, and signaling.
+The enrichment analysis tested 7,917 GO terms and identified **794 significant
+terms** at adjusted *p* < 0.05. The strongest results involved extracellular
+matrix, adhesion, epithelial junctions, hormone responses, and receptor
+signaling.
 
 | GO term | GO identifier | Overlap | Fold enrichment | Adjusted *p* |
 |---|---|---:|---:|---:|
-| Angiogenesis | GO:0001525 | 110 | 1.86 | 4.67 x 10^-10 |
-| Positive regulation of gene expression | GO:0010628 | 151 | 1.61 | 2.28 x 10^-8 |
-| Maintenance of blood-brain barrier | GO:0035633 | 28 | 3.01 | 5.44 x 10^-8 |
-| Multicellular organism development | GO:0007275 | 41 | 2.33 | 9.14 x 10^-7 |
-| Positive regulation of cell migration | GO:0030335 | 100 | 1.68 | 1.43 x 10^-6 |
-| Positive regulation of cell population proliferation | GO:0008284 | 152 | 1.47 | 1.65 x 10^-5 |
-| Vasculogenesis | GO:0001570 | 32 | 2.27 | 7.63 x 10^-5 |
-| Cell migration | GO:0016477 | 94 | 1.59 | 7.63 x 10^-5 |
-| Cell adhesion | GO:0007155 | 148 | 1.41 | 2.19 x 10^-4 |
-| PI3K/AKT signal transduction regulation | GO:0051897 | 66 | 1.65 | 5.46 x 10^-4 |
+| Extracellular matrix | GO:0031012 | 176 | 1.80 | 1.74 x 10^-14 |
+| External encapsulating structure | GO:0030312 | 176 | 1.80 | 1.74 x 10^-14 |
+| Collagen-containing extracellular matrix | GO:0062023 | 143 | 1.88 | 1.87 x 10^-13 |
+| Apical junction complex | GO:0043296 | 66 | 2.18 | 4.40 x 10^-9 |
+| Cell-substrate adhesion | GO:0031589 | 126 | 1.73 | 1.15 x 10^-7 |
+| Cellular response to peptide hormone stimulus | GO:0071375 | 118 | 1.76 | 1.15 x 10^-7 |
+| PDGF receptor signaling pathway | GO:0048008 | 50 | 2.42 | 1.23 x 10^-7 |
+| Response to peptide hormone | GO:0043434 | 145 | 1.64 | 1.23 x 10^-7 |
+| Bicellular tight junction | GO:0005923 | 55 | 2.19 | 1.49 x 10^-7 |
+| Integrin binding | GO:0005178 | 65 | 2.05 | 6.24 x 10^-7 |
 
-These functions are biologically plausible for breast cancer. Angiogenesis
-supports tumor vascularization, altered adhesion and migration facilitate
-local invasion, and proliferative and PI3K/AKT signaling are established
-components of tumor growth and survival. The enrichment analysis was performed
-on a combined significant-gene list, so it does not distinguish pathways
-driven specifically by upregulated versus downregulated genes.
+These functions are biologically plausible for breast cancer.
+Extracellular-matrix and collagen remodeling can reflect tumor-stroma
+reorganization, while altered adhesion, tight junctions, integrin binding,
+hormone responses, and growth-factor signaling are relevant to epithelial
+tumor behavior. The enrichment analysis was performed on a combined
+significant-gene list, so it does not distinguish pathways driven specifically
+by upregulated versus downregulated genes.
 
 # 4. Comparison with the original study
 
@@ -225,11 +228,11 @@ and a subset of 72 Cancer Gene Census genes with deregulated ncNAT profiles.
 
 The present analysis addresses a narrower question. It confirms that paired
 tumor and adjacent tissues have markedly different gene-level expression
-profiles, and it identifies processes expected in cancer, including
-angiogenesis, migration, adhesion, proliferation, and extracellular-matrix
-remodeling. These observations are compatible with the original paper's
-conclusion that tumor tissue undergoes substantial transcriptional
-reorganization.
+profiles, and it identifies processes expected in cancer, including adhesion,
+epithelial junctions, hormone and growth-factor responses, and
+extracellular-matrix remodeling. These observations are compatible with the
+original paper's conclusion that tumor tissue undergoes substantial
+transcriptional reorganization.
 
 The enrichment results are not directly equivalent to those in the paper.
 The publication tested specialized ncNAT/protein-coding gene-pair lists and
@@ -288,17 +291,19 @@ upregulated and downregulated genes or a ranked-list method such as GSEA.
 
 The paired DESeq2 analysis detected a strong gene-expression difference
 between ER+ breast tumors and adjacent non-malignant tissue. The top genes and
-GO terms indicate changes in extracellular-matrix organization, angiogenesis,
-cell migration, adhesion, proliferation, metabolism, and signaling. These
+GO terms indicate changes in extracellular-matrix organization, adhesion,
+epithelial junctions, hormone responses, metabolism, and signaling. These
 results support the broad conclusion that breast tumors undergo extensive
 transcriptional remodeling, while the small sample size and low mapping rate
 require cautious interpretation. The workflow satisfies the assignment's
 gene-level objective but should not be considered a direct reproduction of
 the original paper's ncNAT-specific analysis.
 
-# Reproducibility and output files
+# 8. Reproducibility and deliverables
 
-The complete pipeline is available in the `Project` directory. Main commands:
+The complete analysis pipeline and the scripts used for data acquisition,
+quality control, Salmon quantification, DESeq2 analysis, visualization, and GO
+enrichment are available in the `Project` directory. The main commands are:
 
 ```bash
 make prepare-dea
@@ -307,14 +312,18 @@ make plots
 make enrichment
 ```
 
-Principal deliverables:
+The principal deliverables requested by the assignment are:
 
-- `data/GSE103001/de/results/deseq2_all_genes.csv`
-- `data/GSE103001/de/results/deseq2_significant_genes_padj_0.05.csv`
-- `data/GSE103001/de/results/volcano_padj.png`
-- `data/GSE103001/de/results/ma_plot.png`
-- `data/GSE103001/de/results/top_de_gene_heatmap.png`
-- `data/GSE103001/enrichment/go_overrepresentation_significant.csv`
+- short report: `report/Part1_Report_Barra.md`;
+- scripts: `main.py`, the Python workflow modules, and the R scripts under
+  `DifferentialExpression/scripts` and `Enrichment/scripts`;
+- complete DEG table: `data/GSE103001/de/results/deseq2_all_genes.csv`;
+- significant DEG table:
+  `data/GSE103001/de/results/deseq2_significant_genes_padj_0.05.csv`;
+- enrichment results:
+  `data/GSE103001/enrichment/go_overrepresentation_significant.csv`;
+- main figures: the volcano plot, MA plot, PCA, sample-distance heatmap, and
+  top-gene heatmap under `data/GSE103001/de/results`.
 
 # References
 

@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from DataSourcer.datasets import GSE103001_PROFILE, PROFILES, DatasetProfile
+from ..DataSourcer.datasets import GSE103001_PROFILE, PROFILES, DatasetProfile
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_ROOT = PROJECT_ROOT / "data"
 
 
