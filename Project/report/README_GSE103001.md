@@ -56,13 +56,15 @@ To download manually, prepend `https://` to each `fastq_ftp` entry.
 ### 5. Matched-pair selection rule used here
 The script selects patients in lexicographic order and keeps only complete matched pairs:
 - a pair is valid only if both `normal` and `tumor` are present
+- patient `12-02` is excluded because its tumor run has an anomalous mixed ENA
+  layout (a singleton FASTQ together with paired `_1`/`_2` files)
 - `--num-pairs N` keeps the first `N` complete pairs
 
 For `--num-pairs 4`, the selected patients are:
-- `12-02`
 - `12-03`
 - `13-02`
 - `13-03`
+- `13-05`
 
 ## Automatic Rebuild
 
@@ -75,7 +77,7 @@ python .\DataSourcer\build_metadata_table.py --num-pairs 4
 Build a metadata table for 6 pairs and choose the output name explicitly:
 
 ```powershell
-python .\DataSourcer\build_metadata_table.py --num-pairs 6 --output .\data\GSE1030001\GSE103001_selected_6pairs.tsv
+python .\DataSourcer\build_metadata_table.py --num-pairs 6 --output .\data\GSE103001\GSE103001_selected_6pairs.tsv
 ```
 
 ## Download FASTQ Files
@@ -95,5 +97,5 @@ python .\DataSourcer\download_fastq_from_tsv.py --metadata .\GSE103001_selected_
 ## Notes
 - FASTQ files are raw sequencing reads, not trimmed data.
 - You should still run QC and decide whether trimming is needed.
-- One run in this dataset may expose an additional singleton FASTQ file besides `_1` and `_2`; this comes from the archive export, not from preprocessing done by the authors.
-
+- The anomalous `12-02` tumor run is deliberately excluded, so every selected
+  sample is represented by an unambiguous pair of `_1` and `_2` FASTQ files.

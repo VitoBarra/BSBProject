@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
-from DataSourcer import DataSourceConfig, PROFILES, build_metadata_table, download_reference_transcriptome
-from DifferentialExpression import (
-    DifferentialExpressionConfig,
-    SalmonGeneAggregationConfig,
-    build_salmon_gene_matrices,
-    run_deseq2,
-)
-from Enrichment import EnrichmentConfig, run_go_enrichment
-from Quantification import QuantificationConfig, run_salmon
-from QualityControl import QualityControlConfig, run_fastp, run_fastqc, run_multiqc
-from DataSourcer.download_fastq import download_fastq_from_tsv
+from RNA_seq.DataSourcer import DataSourceConfig, PROFILES, build_metadata_table, download_reference_transcriptome
+from RNA_seq.DataSourcer.download_fastq import download_fastq_from_tsv
+from RNA_seq.DifferentialExpression import *
+from RNA_seq.Enrichment import EnrichmentConfig, run_go_enrichment
+from RNA_seq.QualityControl import QualityControlConfig, run_fastp, run_fastqc, run_multiqc
+from RNA_seq.Quantification import QuantificationConfig, run_salmon
 
 
 def parse_args() -> argparse.Namespace:
