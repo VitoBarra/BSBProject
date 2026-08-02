@@ -98,4 +98,4 @@ class SalmonGeneAggregationConfig:
 
 
 from .salmon_to_gene import build_salmon_gene_matrices
-from .deseq2_runner import run_deseq2
+from .deseq2_runner import generate_deseq2_plots, run_deseq2, run_deseq2_analysis

@@ -39,4 +39,4 @@ class EnrichmentConfig:
         return self.enrichment_dir or (self.dataset_root() / "enrichment")
 
 
-from .go_runner import run_go_enrichment
+from .go_runner import generate_go_enrichment_plots, run_go_enrichment, run_go_enrichment_analysis

@@ -6,6 +6,7 @@ from ExternalTools import ExternalToolRunner
 from Log.log_util import log
 
 from . import DifferentialExpressionConfig
+from .de_results import generate_de_outputs
 
 LOG_PREFIX = "deseq2"
 SCRIPT_PATH = Path(__file__).resolve().parent / "scripts" / "run_deseq2.R"
@@ -15,7 +16,7 @@ def _log(message: str) -> None:
     log(message, LOG_PREFIX)
 
 
-def run_deseq2(
+def run_deseq2_analysis(
     config: DifferentialExpressionConfig,
     executable: str = "Rscript",
 ) -> Path:
@@ -56,3 +57,27 @@ def run_deseq2(
 
     _log("Done")
     return output_dir
+
+
+def generate_deseq2_plots(config: DifferentialExpressionConfig) -> Path:
+    output_dir = config.resolved_de_results_dir()
+    sample_table_path = config.resolved_sample_table_path()
+
+    _log("Generating DE result tables and plots with Python")
+    generate_de_outputs(
+        results_path=output_dir / "deseq2_all_genes.csv",
+        normalized_counts_path=output_dir / "normalized_counts.csv",
+        vst_counts_path=output_dir / "vst_counts.csv",
+        samples_path=sample_table_path,
+    )
+
+    _log("Done")
+    return output_dir
+
+
+def run_deseq2(
+    config: DifferentialExpressionConfig,
+    executable: str = "Rscript",
+) -> Path:
+    run_deseq2_analysis(config, executable=executable)
+    return generate_deseq2_plots(config)
