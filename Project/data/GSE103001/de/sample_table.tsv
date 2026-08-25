@@ -1,9 +1,0 @@
-sample_name	patient	condition	srr	quant_sf
-12-03_normal	12-03	normal	SRR5962199	/project/data/GSE103001/quant/salmon/SRR5962199/quant.sf
-12-03_tumor	12-03	tumor	SRR5962221	/project/data/GSE103001/quant/salmon/SRR5962221/quant.sf
-13-02_normal	13-02	normal	SRR5962200	/project/data/GSE103001/quant/salmon/SRR5962200/quant.sf
-13-02_tumor	13-02	tumor	SRR5962222	/project/data/GSE103001/quant/salmon/SRR5962222/quant.sf
-13-03_normal	13-03	normal	SRR5962201	/project/data/GSE103001/quant/salmon/SRR5962201/quant.sf
-13-03_tumor	13-03	tumor	SRR5962223	/project/data/GSE103001/quant/salmon/SRR5962223/quant.sf
-13-05_normal	13-05	normal	SRR5962202	/project/data/GSE103001/quant/salmon/SRR5962202/quant.sf
-13-05_tumor	13-05	tumor	SRR5962224	/project/data/GSE103001/quant/salmon/SRR5962224/quant.sf

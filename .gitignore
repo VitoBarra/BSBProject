@@ -111,7 +111,7 @@ ipython_config.py
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
 #   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
-#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
+#   https://pdm-project.org/en/latest/usage/#working-with-version-control
 #pdm.lock
 #pdm.toml
 .pdm-python
@@ -212,29 +212,31 @@ __marimo__/
 
 ## data
 /Homework/data**
-/Project/data/**
+/data/**
 
 # Keep compact Part 2 network-medicine inputs and deliverables. Raw API
 # responses remain ignored and can be regenerated with the Makefile.
-!/Project/data/network_medicine/
-/Project/data/network_medicine/raw/
-!/Project/data/network_medicine/README.md
-!/Project/data/network_medicine/processed/
-!/Project/data/network_medicine/processed/**
-!/Project/data/network_medicine/results/
-!/Project/data/network_medicine/results/**
+!/data/network_medicine/
+/data/network_medicine/raw/
+!/data/network_medicine/README.md
+!/data/network_medicine/processed/
+!/data/network_medicine/processed/**
+!/data/network_medicine/results/
+!/data/network_medicine/results/**
 
 # Keep large/generated analysis inputs out of Git, but include the compact
 # Part 1 submission artefacts required to reproduce and review the report.
-!/Project/data/GSE103001/
-!/Project/data/GSE103001/GSE103001_selected_4pairs.tsv
-!/Project/data/GSE103001/de/
-/Project/data/GSE103001/de/**
-!/Project/data/GSE103001/de/sample_table.tsv
-!/Project/data/GSE103001/de/results/
-!/Project/data/GSE103001/de/results/**
-!/Project/data/GSE103001/enrichment/
-!/Project/data/GSE103001/enrichment/**
-
-##Tools
-Project/.tools/
+!/data/RNA-seq/
+!/data/RNA-seq/reference/
+!/data/RNA-seq/reference/salmon_index/
+/data/RNA-seq/reference/salmon_index/**
+!/data/RNA-seq/reference/salmon_index/bsb_index_metadata.json
+!/data/RNA-seq/GSE103001/
+!/data/RNA-seq/GSE103001/GSE103001_selected_4pairs.tsv
+!/data/RNA-seq/GSE103001/de/
+/data/RNA-seq/GSE103001/de/**
+!/data/RNA-seq/GSE103001/de/sample_table.tsv
+!/data/RNA-seq/GSE103001/de/results/
+!/data/RNA-seq/GSE103001/de/results/**
+!/data/RNA-seq/GSE103001/enrichment/
+!/data/RNA-seq/GSE103001/enrichment/**

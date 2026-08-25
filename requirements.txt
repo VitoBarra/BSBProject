@@ -1,2 +1,4 @@
 numpy~=2.4.1
 matplotlib~=3.10.8
+biopython~=1.87.0
+pycurl~=7.46.0
